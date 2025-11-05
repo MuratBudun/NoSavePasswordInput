@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>No Save Password Component Demo</title>
+    <script type="module" src="./no_save_password_control.js"></script>
+    <style>
+      :root {
+        /* Component Custom Properties */
+        --no-save-password-padding: 0.75rem 1rem;
+        --no-save-password-border: 1px solid #cbd5e1;
+        --no-save-password-border-radius: 6px;
+        --no-save-password-focus-ring: #3b82f6;
+        --no-save-password-background: #ffffff;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        color: #1e293b;
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 2rem 1rem;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+      }
+
+      .subtitle {
+        color: #64748b;
+        font-size: 1rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+
+      .card-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #f1f5f9;
+      }
+
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      label {
+        display: block;
+        font-weight: 500;
+        color: #334155;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .description {
+        font-size: 0.813rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+      }
+
+      button {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        background: #3b82f6;
+        color: #ffffff;
+        font-size: 0.938rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      button:hover {
+        background: #2563eb;
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+      }
+
+      button:active {
+        transform: translateY(1px);
+      }
+
+      .result {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-left: 3px solid #3b82f6;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+        color: #334155;
+        word-break: break-all;
+      }
+
+      .features {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .feature-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        background: #3b82f6;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .feature-text {
+        font-size: 0.875rem;
+        color: #475569;
+      }
+
+      code {
+        background: #f1f5f9;
+        padding: 0.125rem 0.375rem;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.813rem;
+        color: #be123c;
+      }
+
+      /* Playground Styles */
+      .playground {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        margin-bottom: 2rem;
+      }
+
+      .playground-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 1.5rem;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 0.5rem;
+        border-bottom: 2px solid #f1f5f9;
+        margin-bottom: 1.5rem;
+      }
+
+      .tab-button {
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: -2px;
+        width: auto;
+      }
+
+      .tab-button:hover {
+        color: #334155;
+        background: transparent;
+        box-shadow: none;
+        transform: none;
+      }
+
+      .tab-button.active {
+        color: #3b82f6;
+        border-bottom-color: #3b82f6;
+        background: transparent;
+      }
+
+      .tab-content {
+        display: none;
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+      }
+
+      .tab-content::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .tab-content::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+      }
+
+      .tab-content::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+
+      .tab-content::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .control-group {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .control-item {
+        display: grid;
+        gap: 0.375rem;
+      }
+
+      .control-item label {
+        font-size: 0.813rem;
+        font-weight: 500;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .control-item input[type="text"],
+      .control-item input[type="number"],
+      .control-item input[type="color"] {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-family: 'Courier New', monospace;
+      }
+
+      .control-item input[type="color"] {
+        height: 2.5rem;
+        cursor: pointer;
+      }
+
+      .control-item input[type="checkbox"] {
+        width: 1.125rem;
+        height: 1.125rem;
+        cursor: pointer;
+      }
+
+      .preview-section {
+        background: #f8fafc;
+        border-radius: 6px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .preview-section::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .preview-section::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+      }
+
+      .preview-section::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+
+      .preview-section::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      .preview-section h3 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .preview-demo {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e2e8f0;
+      }
+
+      .code-output {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.75rem;
+        overflow-x: auto;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .code-output .tag {
+        color: #7dd3fc;
+      }
+
+      .code-output .attr {
+        color: #a78bfa;
+      }
+
+      .code-output .value {
+        color: #fbbf24;
+      }
+
+      .code-output .comment {
+        color: #94a3b8;
+      }
+
+      .copy-btn {
+        width: auto;
+        padding: 0.5rem 1rem;
+        font-size: 0.813rem;
+        background: #64748b;
+        margin-top: 0.5rem;
+      }
+
+      .copy-btn:hover {
+        background: #475569;
+      }
+
+      .copy-btn.copied {
+        background: #10b981;
+      }
+
+      @media (max-width: 968px) {
+        .playground-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>No Save Password Component</h1>
+        <p class="subtitle">Secure password input with browser autofill prevention</p>
+      </header>
+
+      <!-- Custom Playground -->
+      <div class="playground">
+        <h2 class="card-title">Interactive Playground</h2>
+        <div class="playground-grid">
+          <!-- Controls -->
+          <div>
+            <div class="tabs">
+              <button class="tab-button active" data-tab="attributes">Attributes</button>
+              <button class="tab-button" data-tab="css-vars">CSS Variables</button>
+            </div>
+
+            <!-- Attributes Tab -->
+            <div class="tab-content active" id="tab-attributes">
+              <div class="control-group">
+                <div class="control-item">
+                  <label>
+                    <input type="checkbox" id="ctrl-required" checked>
+                    required
+                  </label>
+                </div>
+
+                <div class="control-item">
+                  <label>
+                    <input type="checkbox" id="ctrl-disabled">
+                    disabled
+                  </label>
+                </div>
+
+                <div class="control-item">
+                  <label>
+                    <input type="checkbox" id="ctrl-reveal-toggle" checked>
+                    reveal-toggle
+                  </label>
+                </div>
+
+                <div class="control-item">
+                  <label>
+                    <input type="checkbox" id="ctrl-disable-paste">
+                    disable-paste
+                  </label>
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-placeholder">placeholder</label>
+                  <input type="text" id="ctrl-placeholder" value="Enter your code">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-mask-char">mask-char</label>
+                  <input type="text" id="ctrl-mask-char" value="•" maxlength="1">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-minlength">minlength</label>
+                  <input type="number" id="ctrl-minlength" value="6" min="0">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-maxlength">maxlength</label>
+                  <input type="number" id="ctrl-maxlength" value="" placeholder="No limit">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-pattern">pattern</label>
+                  <input type="text" id="ctrl-pattern" value="" placeholder="e.g. [0-9]{6}">
+                </div>
+              </div>
+            </div>
+
+            <!-- CSS Variables Tab -->
+            <div class="tab-content" id="tab-css-vars">
+              <div class="control-group">
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #475569; margin-top: 0;">Input Styles</h4>
+                
+                <div class="control-item">
+                  <label for="ctrl-padding">--no-save-password-padding</label>
+                  <input type="text" id="ctrl-padding" value="0.75rem 1rem">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-border">--no-save-password-border</label>
+                  <input type="text" id="ctrl-border" value="1px solid #cbd5e1">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-border-radius">--no-save-password-border-radius</label>
+                  <input type="text" id="ctrl-border-radius" value="6px">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-background">--no-save-password-background</label>
+                  <input type="color" id="ctrl-background" value="#ffffff">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-color">--no-save-password-color</label>
+                  <input type="color" id="ctrl-color" value="#000000">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-placeholder-color">--no-save-password-placeholder-color</label>
+                  <input type="color" id="ctrl-placeholder-color" value="#6b7280">
+                </div>
+
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #475569; margin-top: 1rem;">Focus Styles</h4>
+
+                <div class="control-item">
+                  <label for="ctrl-focus-ring">--no-save-password-focus-ring</label>
+                  <input type="color" id="ctrl-focus-ring" value="#3b82f6">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-focus-border-color">--no-save-password-focus-border-color</label>
+                  <input type="color" id="ctrl-focus-border-color" value="#3b82f6">
+                </div>
+
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #475569; margin-top: 1rem;">Toggle Button</h4>
+
+                <div class="control-item">
+                  <label for="ctrl-toggle-padding">--no-save-password-toggle-padding</label>
+                  <input type="text" id="ctrl-toggle-padding" value="0.25rem">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-toggle-right">--no-save-password-toggle-right</label>
+                  <input type="text" id="ctrl-toggle-right" value="0.25rem">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-toggle-icon-size">--no-save-password-toggle-icon-size</label>
+                  <input type="text" id="ctrl-toggle-icon-size" value="1.25rem">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-toggle-icon-color">--no-save-password-toggle-icon-color</label>
+                  <input type="color" id="ctrl-toggle-icon-color" value="#64748b">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-toggle-hover-bg">--no-save-password-toggle-hover-background</label>
+                  <input type="text" id="ctrl-toggle-hover-bg" value="rgba(0, 0, 0, 0.05)">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-toggle-active-bg">--no-save-password-toggle-active-background</label>
+                  <input type="color" id="ctrl-toggle-active-bg" value="#e2e8f0">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview & Code -->
+          <div class="preview-section">
+            <h3>LIVE PREVIEW</h3>
+            <div class="preview-demo">
+              <label for="playground-input" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                Test Input
+              </label>
+              <no-save-password
+                id="playground-input"
+                name="playgroundCode"
+                placeholder="Enter your code"
+                mask-char="•"
+                minlength="6"
+                reveal-toggle
+                required
+              ></no-save-password>
+            </div>
+
+            <h3>HTML CODE</h3>
+            <div class="code-output" id="html-output"></div>
+            <button class="copy-btn" id="copy-html">Copy HTML</button>
+
+            <h3 style="margin-top: 1.5rem;">CSS CODE</h3>
+            <div class="code-output" id="css-output"></div>
+            <button class="copy-btn" id="copy-css">Copy CSS</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Basic Usage -->
+        <div class="card">
+          <h2 class="card-title">Basic Usage</h2>
+          <form id="basic-form">
+            <div class="form-group">
+              <label for="basic-password">Access Code</label>
+              <no-save-password
+                id="basic-password"
+                name="accessCode"
+                placeholder="Enter your code"
+                mask-char="•"
+                minlength="4"
+                required
+              ></no-save-password>
+              <div class="description">Minimum 4 characters required</div>
+            </div>
+            <button type="submit">Verify</button>
+            <div class="result" id="basic-result">Awaiting submission...</div>
+          </form>
+        </div>
+
+        <!-- Advanced Features -->
+        <div class="card">
+          <h2 class="card-title">Advanced Features</h2>
+          <form id="advanced-form">
+            <div class="form-group">
+              <label for="advanced-password">Security PIN</label>
+              <no-save-password
+                id="advanced-password"
+                name="securityPin"
+                placeholder="6-digit PIN"
+                mask-char="*"
+                minlength="6"
+                maxlength="6"
+                pattern="[0-9]{6}"
+                reveal-toggle
+                disable-paste
+                required
+              ></no-save-password>
+              <div class="description">6 digits only, paste disabled, toggle reveal</div>
+            </div>
+            <button type="submit">Authenticate</button>
+            <div class="result" id="advanced-result">Awaiting submission...</div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Features List -->
+      <div class="features">
+        <h2 class="card-title">Component Features</h2>
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-text">Browser autofill prevention</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-text">Custom masking characters</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-text">Optional reveal toggle</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-text">Copy/paste control</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-text">Built-in validation</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-text">CSS custom properties</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-text">Native form integration</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-text">Accessibility support</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<script>
+      // Basic form
+      const basicForm = document.getElementById('basic-form');
+      const basicResult = document.getElementById('basic-result');
+
+      basicForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(basicForm);
+        basicResult.textContent = `✓ Submitted: ${formData.get('accessCode') || 'empty'}`;
+      });
+
+      // Advanced form
+      const advancedForm = document.getElementById('advanced-form');
+      const advancedResult = document.getElementById('advanced-result');
+
+      advancedForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(advancedForm);
+        advancedResult.textContent = `✓ Submitted: ${formData.get('securityPin') || 'empty'}`;
+      });
+
+      // Playground
+      const playgroundInput = document.getElementById('playground-input');
+      const htmlOutput = document.getElementById('html-output');
+      const cssOutput = document.getElementById('css-output');
+      
+      const controls = {
+        required: document.getElementById('ctrl-required'),
+        disabled: document.getElementById('ctrl-disabled'),
+        revealToggle: document.getElementById('ctrl-reveal-toggle'),
+        disablePaste: document.getElementById('ctrl-disable-paste'),
+        placeholder: document.getElementById('ctrl-placeholder'),
+        maskChar: document.getElementById('ctrl-mask-char'),
+        minlength: document.getElementById('ctrl-minlength'),
+        maxlength: document.getElementById('ctrl-maxlength'),
+        pattern: document.getElementById('ctrl-pattern'),
+        padding: document.getElementById('ctrl-padding'),
+        border: document.getElementById('ctrl-border'),
+        borderRadius: document.getElementById('ctrl-border-radius'),
+        background: document.getElementById('ctrl-background'),
+        color: document.getElementById('ctrl-color'),
+        placeholderColor: document.getElementById('ctrl-placeholder-color'),
+        focusRing: document.getElementById('ctrl-focus-ring'),
+        focusBorderColor: document.getElementById('ctrl-focus-border-color'),
+        togglePadding: document.getElementById('ctrl-toggle-padding'),
+        toggleRight: document.getElementById('ctrl-toggle-right'),
+        toggleIconSize: document.getElementById('ctrl-toggle-icon-size'),
+        toggleIconColor: document.getElementById('ctrl-toggle-icon-color'),
+        toggleHoverBg: document.getElementById('ctrl-toggle-hover-bg'),
+        toggleActiveBg: document.getElementById('ctrl-toggle-active-bg'),
+      };
+
+      // Tab functionality
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const tabName = button.getAttribute('data-tab');
+          
+          // Remove active class from all buttons and contents
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          tabContents.forEach(content => content.classList.remove('active'));
+          
+          // Add active class to clicked button and corresponding content
+          button.classList.add('active');
+          document.getElementById(`tab-${tabName}`).classList.add('active');
+        });
+      });
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function updatePlayground() {
+        // Update attributes
+        if (controls.required.checked) {
+          playgroundInput.setAttribute('required', '');
+        } else {
+          playgroundInput.removeAttribute('required');
+        }
+
+        if (controls.disabled.checked) {
+          playgroundInput.setAttribute('disabled', '');
+        } else {
+          playgroundInput.removeAttribute('disabled');
+        }
+
+        if (controls.revealToggle.checked) {
+          playgroundInput.setAttribute('reveal-toggle', '');
+        } else {
+          playgroundInput.removeAttribute('reveal-toggle');
+        }
+
+        if (controls.disablePaste.checked) {
+          playgroundInput.setAttribute('disable-paste', '');
+        } else {
+          playgroundInput.removeAttribute('disable-paste');
+        }
+
+        playgroundInput.setAttribute('placeholder', controls.placeholder.value);
+        playgroundInput.setAttribute('mask-char', controls.maskChar.value || '•');
+        
+        if (controls.minlength.value) {
+          playgroundInput.setAttribute('minlength', controls.minlength.value);
+        } else {
+          playgroundInput.removeAttribute('minlength');
+        }
+
+        if (controls.maxlength.value) {
+          playgroundInput.setAttribute('maxlength', controls.maxlength.value);
+        } else {
+          playgroundInput.removeAttribute('maxlength');
+        }
+
+        if (controls.pattern.value) {
+          playgroundInput.setAttribute('pattern', controls.pattern.value);
+        } else {
+          playgroundInput.removeAttribute('pattern');
+        }
+
+        // Update CSS variables
+        playgroundInput.style.setProperty('--no-save-password-padding', controls.padding.value);
+        playgroundInput.style.setProperty('--no-save-password-border', controls.border.value);
+        playgroundInput.style.setProperty('--no-save-password-border-radius', controls.borderRadius.value);
+        playgroundInput.style.setProperty('--no-save-password-background', controls.background.value);
+        playgroundInput.style.setProperty('--no-save-password-color', controls.color.value);
+        playgroundInput.style.setProperty('--no-save-password-placeholder-color', controls.placeholderColor.value);
+        playgroundInput.style.setProperty('--no-save-password-focus-ring', controls.focusRing.value);
+        playgroundInput.style.setProperty('--no-save-password-focus-border-color', controls.focusBorderColor.value);
+        playgroundInput.style.setProperty('--no-save-password-toggle-padding', controls.togglePadding.value);
+        playgroundInput.style.setProperty('--no-save-password-toggle-right', controls.toggleRight.value);
+        playgroundInput.style.setProperty('--no-save-password-toggle-icon-size', controls.toggleIconSize.value);
+        playgroundInput.style.setProperty('--no-save-password-toggle-icon-color', controls.toggleIconColor.value);
+        playgroundInput.style.setProperty('--no-save-password-toggle-hover-background', controls.toggleHoverBg.value);
+        playgroundInput.style.setProperty('--no-save-password-toggle-active-background', controls.toggleActiveBg.value);
+
+        // Generate HTML code
+        let htmlAttrs = [];
+        htmlAttrs.push(`  name="yourFieldName"`);
+        if (controls.placeholder.value) htmlAttrs.push(`  placeholder="${escapeHtml(controls.placeholder.value)}"`);
+        if (controls.maskChar.value) htmlAttrs.push(`  mask-char="${escapeHtml(controls.maskChar.value)}"`);
+        if (controls.minlength.value) htmlAttrs.push(`  minlength="${controls.minlength.value}"`);
+        if (controls.maxlength.value) htmlAttrs.push(`  maxlength="${controls.maxlength.value}"`);
+        if (controls.pattern.value) htmlAttrs.push(`  pattern="${escapeHtml(controls.pattern.value)}"`);
+        if (controls.revealToggle.checked) htmlAttrs.push(`  reveal-toggle`);
+        if (controls.disablePaste.checked) htmlAttrs.push(`  disable-paste`);
+        if (controls.required.checked) htmlAttrs.push(`  required`);
+        if (controls.disabled.checked) htmlAttrs.push(`  disabled`);
+
+        htmlOutput.innerHTML = `<span class="tag">&lt;no-save-password</span>\n${htmlAttrs.map(attr => {
+          const parts = attr.split('=');
+          if (parts.length === 1) {
+            return `  <span class="attr">${parts[0].trim()}</span>`;
+          }
+          return `  <span class="attr">${parts[0]}</span>=<span class="value">${parts[1]}</span>`;
+        }).join('\n')}\n<span class="tag">&gt;&lt;/no-save-password&gt;</span>`;
+
+        // Generate CSS code
+        const cssVars = [];
+        if (controls.padding.value !== '0.75rem 1rem') {
+          cssVars.push(`  --no-save-password-padding: ${controls.padding.value};`);
+        }
+        if (controls.border.value !== '1px solid #cbd5e1') {
+          cssVars.push(`  --no-save-password-border: ${controls.border.value};`);
+        }
+        if (controls.borderRadius.value !== '6px') {
+          cssVars.push(`  --no-save-password-border-radius: ${controls.borderRadius.value};`);
+        }
+        if (controls.background.value !== '#ffffff') {
+          cssVars.push(`  --no-save-password-background: ${controls.background.value};`);
+        }
+        if (controls.color.value !== '#000000') {
+          cssVars.push(`  --no-save-password-color: ${controls.color.value};`);
+        }
+        if (controls.placeholderColor.value !== '#6b7280') {
+          cssVars.push(`  --no-save-password-placeholder-color: ${controls.placeholderColor.value};`);
+        }
+        if (controls.focusRing.value !== '#3b82f6') {
+          cssVars.push(`  --no-save-password-focus-ring: ${controls.focusRing.value};`);
+        }
+        if (controls.focusBorderColor.value !== '#3b82f6') {
+          cssVars.push(`  --no-save-password-focus-border-color: ${controls.focusBorderColor.value};`);
+        }
+        if (controls.togglePadding.value !== '0.25rem') {
+          cssVars.push(`  --no-save-password-toggle-padding: ${controls.togglePadding.value};`);
+        }
+        if (controls.toggleRight.value !== '0.25rem') {
+          cssVars.push(`  --no-save-password-toggle-right: ${controls.toggleRight.value};`);
+        }
+        if (controls.toggleIconSize.value !== '1.25rem') {
+          cssVars.push(`  --no-save-password-toggle-icon-size: ${controls.toggleIconSize.value};`);
+        }
+        if (controls.toggleIconColor.value !== '#64748b') {
+          cssVars.push(`  --no-save-password-toggle-icon-color: ${controls.toggleIconColor.value};`);
+        }
+        if (controls.toggleHoverBg.value !== 'rgba(0, 0, 0, 0.05)') {
+          cssVars.push(`  --no-save-password-toggle-hover-background: ${controls.toggleHoverBg.value};`);
+        }
+        if (controls.toggleActiveBg.value !== '#e2e8f0') {
+          cssVars.push(`  --no-save-password-toggle-active-background: ${controls.toggleActiveBg.value};`);
+        }
+
+        if (cssVars.length > 0) {
+          cssOutput.innerHTML = `<span class="comment">/* Add to your CSS */</span>\n<span class="tag">no-save-password</span> {\n${cssVars.join('\n')}\n}`;
+        } else {
+          cssOutput.innerHTML = `<span class="comment">/* Using default styles */</span>`;
+        }
+      }
+
+      // Listen to all control changes
+      Object.values(controls).forEach(control => {
+        control.addEventListener('input', updatePlayground);
+        control.addEventListener('change', updatePlayground);
+      });
+
+      // Copy buttons
+      document.getElementById('copy-html').addEventListener('click', function() {
+        const text = htmlOutput.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          this.textContent = '✓ Copied!';
+          this.classList.add('copied');
+          setTimeout(() => {
+            this.textContent = 'Copy HTML';
+            this.classList.remove('copied');
+          }, 2000);
+        });
+      });
+
+      document.getElementById('copy-css').addEventListener('click', function() {
+        const text = cssOutput.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          this.textContent = '✓ Copied!';
+          this.classList.add('copied');
+          setTimeout(() => {
+            this.textContent = 'Copy CSS';
+            this.classList.remove('copied');
+          }, 2000);
+        });
+      });
+
+      // Initial render
+      updatePlayground();
+    </script>
+  </body>
+</html>

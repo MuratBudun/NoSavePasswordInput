@@ -4,7 +4,7 @@ A custom web component that provides secure password input functionality while p
 
 ## Live Demo
 
-[View Interactive Demo](https://muratbudun.github.io/no_save_password/)
+[View Interactive Demo](https://muratbudun.github.io/NoSavePasswordInput/)
 
 ## Overview
 
@@ -265,3 +265,4 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 ## Support
 
 For questions or issues, please open an issue on the GitHub repository.
+

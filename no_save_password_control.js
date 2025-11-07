@@ -25,8 +25,9 @@ template.innerHTML = `
       padding: var(--no-save-password-padding, 0.5rem 0.75rem);
       border: var(--no-save-password-border, 1px solid var(--no-save-password-border-color, #d0d7de));
       border-radius: var(--no-save-password-border-radius, 4px);
-      font: inherit;
-      line-height: 1.4;
+      font-family: var(--no-save-password-font-family, inherit);
+      font-size: var(--no-save-password-font-size, 1rem);
+      line-height: var(--no-save-password-line-height, 1.4);
       background-color: var(--no-save-password-background, #fff);
       color: var(--no-save-password-color, inherit);
       box-shadow: var(--no-save-password-box-shadow, none);
@@ -172,8 +173,8 @@ class NoSavePasswordInput extends HTMLElement {
     this._internals = this.attachInternals();
     this._input = this.shadowRoot.querySelector('input');
     this._toggleButton = this.shadowRoot.querySelector('.toggle');
-  this._iconShow = this.shadowRoot.querySelector('.icon-show');
-  this._iconHide = this.shadowRoot.querySelector('.icon-hide');
+    this._iconShow = this.shadowRoot.querySelector('.icon-show');
+    this._iconHide = this.shadowRoot.querySelector('.icon-hide');
     this._value = '';
     this._maskChar = this._normalizeMaskChar(this.getAttribute('mask-char'));
     this._isRevealed = false;

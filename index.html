@@ -502,6 +502,21 @@
                 </div>
 
                 <div class="control-item">
+                  <label for="ctrl-font-family">--no-save-password-font-family</label>
+                  <input type="text" id="ctrl-font-family" value="inherit">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-font-size">--no-save-password-font-size</label>
+                  <input type="text" id="ctrl-font-size" value="1rem">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-line-height">--no-save-password-line-height</label>
+                  <input type="text" id="ctrl-line-height" value="1.4">
+                </div>
+
+                <div class="control-item">
                   <label for="ctrl-placeholder-color">--no-save-password-placeholder-color</label>
                   <input type="color" id="ctrl-placeholder-color" value="#6b7280">
                 </div>
@@ -711,6 +726,9 @@
         borderRadius: document.getElementById('ctrl-border-radius'),
         background: document.getElementById('ctrl-background'),
         color: document.getElementById('ctrl-color'),
+        fontFamily: document.getElementById('ctrl-font-family'),
+        fontSize: document.getElementById('ctrl-font-size'),
+        lineHeight: document.getElementById('ctrl-line-height'),
         placeholderColor: document.getElementById('ctrl-placeholder-color'),
         focusRing: document.getElementById('ctrl-focus-ring'),
         focusBorderColor: document.getElementById('ctrl-focus-border-color'),
@@ -799,6 +817,9 @@
         playgroundInput.style.setProperty('--no-save-password-border-radius', controls.borderRadius.value);
         playgroundInput.style.setProperty('--no-save-password-background', controls.background.value);
         playgroundInput.style.setProperty('--no-save-password-color', controls.color.value);
+        playgroundInput.style.setProperty('--no-save-password-font-family', controls.fontFamily.value);
+        playgroundInput.style.setProperty('--no-save-password-font-size', controls.fontSize.value);
+        playgroundInput.style.setProperty('--no-save-password-line-height', controls.lineHeight.value);
         playgroundInput.style.setProperty('--no-save-password-placeholder-color', controls.placeholderColor.value);
         playgroundInput.style.setProperty('--no-save-password-focus-ring', controls.focusRing.value);
         playgroundInput.style.setProperty('--no-save-password-focus-border-color', controls.focusBorderColor.value);
@@ -846,6 +867,15 @@
         }
         if (controls.color.value !== '#000000') {
           cssVars.push(`  --no-save-password-color: ${controls.color.value};`);
+        }
+        if (controls.fontFamily.value !== 'inherit') {
+          cssVars.push(`  --no-save-password-font-family: ${controls.fontFamily.value};`);
+        }
+        if (controls.fontSize.value !== '1rem') {
+          cssVars.push(`  --no-save-password-font-size: ${controls.fontSize.value};`);
+        }
+        if (controls.lineHeight.value !== '1.4') {
+          cssVars.push(`  --no-save-password-line-height: ${controls.lineHeight.value};`);
         }
         if (controls.placeholderColor.value !== '#6b7280') {
           cssVars.push(`  --no-save-password-placeholder-color: ${controls.placeholderColor.value};`);

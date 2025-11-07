@@ -63,17 +63,16 @@ template.innerHTML = `
         justify-content: center;
         position: absolute;
         top: var(--no-save-password-toggle-top, 50%);
-        right: var(--no-save-password-toggle-right, 0.25rem);
+        right: var(--no-save-password-toggle-padding, 0.25rem);
         transform: translateY(-50%);
         width: var(--no-save-password-toggle-size, 2.25rem);
-        height: var(--no-save-password-toggle-size, 2.25rem);
-        padding: var(--no-save-password-toggle-padding, 0.25rem);
+        height: calc(100% - calc(var(--no-save-password-toggle-padding, 0.25rem) * 2));
         border: var(--no-save-password-toggle-border, none);
         border-radius: var(--no-save-password-toggle-border-radius, 4px);
         background: var(--no-save-password-toggle-background, transparent);
-      color: var(--no-save-password-toggle-color, inherit);
-      font: 0.875rem/1.2 inherit;
-      cursor: pointer;
+        color: var(--no-save-password-toggle-color, inherit);
+        font: 0.875rem/1.2 inherit;
+        cursor: pointer;
         min-width: var(--no-save-password-toggle-min-width, 2.25rem);
         transition: var(--no-save-password-toggle-transition, background-color 0.15s ease-in-out);
     }
@@ -100,6 +99,10 @@ template.innerHTML = `
         color: var(--no-save-password-disabled-color, #6b7280);
         cursor: not-allowed;
         pointer-events: none;
+    }
+
+    .toggle span {
+        line-height: 0;
     }
 
     .toggle svg {

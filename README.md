@@ -28,9 +28,58 @@ This component prevents browser autofill and password saving mechanisms while ma
 
 Download `no_save_password_control.js` and include it in your HTML:
 
+#### As ES6 Module (Recommended)
+
 ```html
 <script type="module" src="./no_save_password_control.js"></script>
 ```
+
+Then import and use:
+
+```html
+<script type="module">
+  import { NoSavePasswordInput } from './no_save_password_control.js';
+  
+  // Access the class if needed
+  console.log(NoSavePasswordInput);
+  
+  // Component is automatically registered as <no-save-password>
+</script>
+```
+
+#### As Normal Script
+
+```html
+<script src="./no_save_password_control.js"></script>
+```
+
+Then access globally:
+
+```html
+<script>
+  // Component is automatically registered as <no-save-password>
+  // Class is available globally as window.NoSavePasswordInput
+  
+  const input = document.createElement('no-save-password');
+  console.log(NoSavePasswordInput); // Available globally
+</script>
+```
+
+#### CommonJS (Node.js)
+
+```javascript
+const { NoSavePasswordInput } = require('./no_save_password_control.js');
+```
+
+#### AMD (RequireJS)
+
+```javascript
+define(['./no_save_password_control'], function(NoSavePasswordInput) {
+  // Use NoSavePasswordInput
+});
+```
+
+The component automatically detects the environment and works in all contexts.
 
 ### Quick Start
 
@@ -72,6 +121,7 @@ Download `no_save_password_control.js` and include it in your HTML:
 - `--no-save-password-padding` - Input padding (default: `0.5rem 0.75rem`)
 - `--no-save-password-padding-right` - Right padding when toggle visible (default: `2.75rem`)
 - `--no-save-password-border` - Border style (default: `1px solid #d0d7de`)
+- `--no-save-password-border-color` - Border color (default: `#d0d7de`)
 - `--no-save-password-border-radius` - Corner radius (default: `4px`)
 - `--no-save-password-font-family` - Font family (default: `inherit`)
 - `--no-save-password-font-size` - Font size (default: `1rem`)
@@ -80,12 +130,13 @@ Download `no_save_password_control.js` and include it in your HTML:
 - `--no-save-password-color` - Text color (default: `inherit`)
 - `--no-save-password-box-shadow` - Box shadow (default: `none`)
 - `--no-save-password-placeholder-color` - Placeholder text color (default: `#6b7280`)
-- `--no-save-password-transition` - Transition effects
+- `--no-save-password-placeholder-opacity` - Placeholder opacity (default: `1`)
+- `--no-save-password-transition` - Transition effects (default: `border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out`)
 
 ### Focus States
 - `--no-save-password-focus-ring` - Focus outline color (default: `#0969da`)
-- `--no-save-password-focus-border-color` - Border color on focus
-- `--no-save-password-focus-outline` - Outline style
+- `--no-save-password-focus-border-color` - Border color on focus (default: `#0969da`)
+- `--no-save-password-focus-outline` - Outline style (default: `2px solid #0969da`)
 - `--no-save-password-focus-outline-offset` - Outline offset (default: `1px`)
 
 ### Toggle Button
@@ -93,13 +144,17 @@ Download `no_save_password_control.js` and include it in your HTML:
 - `--no-save-password-toggle-right` - Distance from right edge (default: `0.25rem`)
 - `--no-save-password-toggle-top` - Vertical position (default: `50%`)
 - `--no-save-password-toggle-size` - Button dimensions (default: `2.25rem`)
+- `--no-save-password-toggle-border` - Button border (default: `none`)
 - `--no-save-password-toggle-border-radius` - Button corner radius (default: `4px`)
 - `--no-save-password-toggle-background` - Button background (default: `transparent`)
-- `--no-save-password-toggle-hover-background` - Hover background
-- `--no-save-password-toggle-active-background` - Active state background
+- `--no-save-password-toggle-color` - Button text color (default: `inherit`)
+- `--no-save-password-toggle-min-width` - Minimum button width (default: `2.25rem`)
+- `--no-save-password-toggle-hover-background` - Hover background (default: `rgba(0, 0, 0, 0.05)`)
+- `--no-save-password-toggle-active-background` - Active state background (default: `#e2e8f0`)
 - `--no-save-password-toggle-icon-size` - Icon dimensions (default: `1.25rem`)
 - `--no-save-password-toggle-icon-color` - Icon color (default: `currentColor`)
-- `--no-save-password-toggle-focus-ring` - Focus ring style
+- `--no-save-password-toggle-focus-ring` - Focus ring style (default: `0 0 0 2px rgba(9, 105, 218, 0.4)`)
+- `--no-save-password-toggle-transition` - Button transition (default: `background-color 0.15s ease-in-out`)
 
 ### Disabled State
 - `--no-save-password-disabled-background` - Background when disabled (default: `#f3f4f6`)
@@ -108,8 +163,9 @@ Download `no_save_password_control.js` and include it in your HTML:
 
 ### Layout
 - `--no-save-password-display` - Display mode (default: `inline-block`)
+- `--no-save-password-wrapper-display` - Wrapper display mode (default: `inline-block`)
 - `--no-save-password-width` - Component width (default: `auto`)
-- `--no-save-password-min-width` - Minimum width
+- `--no-save-password-min-width` - Minimum width (default: `auto`)
 - `--no-save-password-touch-target` - Touch target size (default: `44px`)
 
 ## Styling Examples
@@ -151,6 +207,81 @@ no-save-password {
 }
 ```
 
+## CSS Parts
+
+The component exposes several parts for advanced styling via the `::part()` pseudo-element:
+
+| Part Name | Description | Example Usage |
+|-----------|-------------|---------------|
+| `wrapper` | The main container wrapping the input and toggle button | Style the overall layout |
+| `input` | The actual input element | Direct input styling |
+| `toggle` | The reveal/hide toggle button | Customize button appearance |
+| `icon-show` | The "show password" icon container | Style the eye icon |
+| `icon-hide` | The "hide password" icon container | Style the eye-off icon |
+
+### Using CSS Parts
+
+CSS Parts allow you to style internal Shadow DOM elements from outside the component:
+
+```css
+/* Style the input directly */
+no-save-password::part(input) {
+  border: 2px solid #3b82f6;
+  font-weight: 500;
+}
+
+/* Style the toggle button */
+no-save-password::part(toggle) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  padding: 0.5rem;
+}
+
+/* Style the icons */
+no-save-password::part(icon-show),
+no-save-password::part(icon-hide) {
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+no-save-password::part(toggle):hover::part(icon-show),
+no-save-password::part(toggle):hover::part(icon-hide) {
+  opacity: 1;
+}
+
+/* Combine with states */
+no-save-password[disabled]::part(input) {
+  opacity: 0.5;
+}
+```
+
+### Parts vs CSS Custom Properties
+
+- **CSS Custom Properties (Variables)**: Best for colors, spacing, and simple values. Works in all browsers.
+- **CSS Parts**: Best for complex styling like borders, backgrounds, transforms. Requires modern browser support.
+
+You can use both together for maximum flexibility:
+
+```css
+no-save-password {
+  /* Custom properties for basic theming */
+  --no-save-password-focus-ring: #8b5cf6;
+  --no-save-password-padding: 1rem;
+}
+
+/* Parts for advanced styling */
+no-save-password::part(input) {
+  border-style: dashed;
+  font-variant: small-caps;
+}
+
+no-save-password::part(toggle) {
+  transform: scale(1.1);
+}
+```
+
+**Note:** CSS Parts provide direct access to Shadow DOM elements, while CSS custom properties are the recommended approach for most styling needs due to better browser compatibility and maintainability.
+
 ## JavaScript API
 
 ### Properties
@@ -181,11 +312,30 @@ input.addEventListener('input', (e) => {
   console.log('Value changed:', e.target.value);
 });
 
+// Listen for Enter key press
+input.addEventListener('enter', (e) => {
+  console.log('Enter pressed, value:', e.detail.value);
+  // You can submit form or perform other actions
+});
+
 // Listen for invalid input
 input.addEventListener('invalid', (e) => {
   console.log('Validation failed:', e.target.validationMessage);
 });
+
+// Listen for change (when focus is lost and value changed)
+input.addEventListener('change', (e) => {
+  console.log('Value changed on blur:', e.target.value);
+});
 ```
+
+**Available Events:**
+- `input` - Fired when the value changes
+- `enter` - Fired when Enter key is pressed (custom event with `detail.value`)
+- `change` - Fired when focus is lost and value has changed
+- `invalid` - Fired when validation fails
+- `focus` - Fired when input receives focus
+- `blur` - Fired when input loses focus
 
 ## Custom Validation Messages
 
@@ -209,6 +359,60 @@ Available data attributes:
 - `data-too-short-message`
 - `data-too-long-message`
 - `data-pattern-message`
+
+## Replacing Legacy Password Inputs
+
+If you need to replace existing password inputs in legacy applications without breaking JavaScript references, use the static `replaceInput` method:
+
+```javascript
+// Get reference to existing password input
+const oldPasswordInput = document.getElementById('password');
+
+// Legacy code has event listeners and references
+oldPasswordInput.addEventListener('input', (e) => {
+  console.log('Password changed:', e.target.value);
+});
+
+// Replace with NoSavePasswordInput while preserving references
+NoSavePasswordInput.replaceInput(oldPasswordInput, {
+  revealToggle: true,
+  maskChar: '●',
+  disablePaste: true
+});
+
+// JavaScript references still work!
+console.log(oldPasswordInput.value); // Works!
+oldPasswordInput.addEventListener('enter', (e) => {
+  console.log('Enter pressed:', e.detail.value); // Works!
+});
+```
+
+### How It Works
+1. Creates a new `<no-save-password>` component
+2. Copies all attributes from the original input
+3. Replaces the original input in the DOM
+4. **Hijacks property getters/setters** on the original input reference
+5. **Forwards all events** from the component to the original input reference
+
+This means:
+- ✅ Existing event listeners continue to work
+- ✅ Property access (`input.value`, `input.disabled`) works seamlessly
+- ✅ Methods (`focus()`, `blur()`, `checkValidity()`) are forwarded
+- ✅ No need to change existing JavaScript code
+
+### replaceInput Options
+
+```javascript
+NoSavePasswordInput.replaceInput(originalInput, {
+  placeholder: 'Enter password',
+  maskChar: '●',           // Character to display for each character
+  revealToggle: true,      // Show reveal/hide toggle button
+  disablePaste: true,      // Prevent paste operations
+  minlength: 8,            // Override original minlength
+  maxlength: 20,           // Override original maxlength
+  // ... any other attribute
+});
+```
 
 ## Browser Compatibility
 

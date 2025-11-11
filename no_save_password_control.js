@@ -122,7 +122,7 @@ template.innerHTML = `
       }
     }
   </style>
-  <div class="wrapper">
+  <div class="wrapper" part="wrapper">
     <input
       part="input"
       type="text"
@@ -142,14 +142,14 @@ template.innerHTML = `
       aria-hidden="true"
       hidden
     >
-      <span class="icon-show" aria-hidden="true">
+      <span class="icon-show" aria-hidden="true" part="icon-show">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
           <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
           <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"></path>
         </svg>
       </span>
-      <span class="icon-hide" aria-hidden="true" hidden>
+      <span class="icon-hide" aria-hidden="true" hidden part="icon-hide">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
           <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828"></path>
@@ -165,7 +165,7 @@ class NoSavePasswordInput extends HTMLElement {
   static formAssociated = true;
 
   static get observedAttributes() {
-    return ['disabled', 'placeholder', 'mask-char', 'minlength', 'maxlength', 'pattern', 'reveal-toggle', 'disable-paste'];
+    return ['disabled', 'placeholder', 'mask-char', 'minlength', 'maxlength', 'pattern', 'reveal-toggle', 'disable-paste', 'name'];
   }
 
   constructor() {
@@ -187,6 +187,7 @@ class NoSavePasswordInput extends HTMLElement {
     this._handleFocus = this._handleFocus.bind(this);
     this._handleBlur = this._handleBlur.bind(this);
     this._handleToggle = this._handleToggle.bind(this);
+    this._handleKeyDown = this._handleKeyDown.bind(this);
 
     this._history = [{ value: this._value, caret: 0 }];
     this._historyIndex = 0;
@@ -194,6 +195,7 @@ class NoSavePasswordInput extends HTMLElement {
 
   connectedCallback() {
     this._input.addEventListener('beforeinput', this._handleBeforeInput);
+    this._input.addEventListener('keydown', this._handleKeyDown);
     this._input.addEventListener('focus', this._handleFocus);
     this._input.addEventListener('blur', this._handleBlur);
     this._input.addEventListener('copy', this._handleCopy);
@@ -221,6 +223,7 @@ class NoSavePasswordInput extends HTMLElement {
 
   disconnectedCallback() {
     this._input.removeEventListener('beforeinput', this._handleBeforeInput);
+    this._input.removeEventListener('keydown', this._handleKeyDown);
     this._input.removeEventListener('focus', this._handleFocus);
     this._input.removeEventListener('blur', this._handleBlur);
     this._input.removeEventListener('copy', this._handleCopy);
@@ -251,6 +254,9 @@ class NoSavePasswordInput extends HTMLElement {
         break;
       case 'reveal-toggle':
         this._updateToggleVisibility();
+        break;
+      case 'name':
+        // name attribute sadece form submission için kullanılır
         break;
       default:
         this._updateValidity();
@@ -322,6 +328,18 @@ class NoSavePasswordInput extends HTMLElement {
     return this.getAttribute('pattern');
   }
 
+  get name() {
+    return this.getAttribute('name');
+  }
+
+  set name(value) {
+    if (value) {
+      this.setAttribute('name', value);
+    } else {
+      this.removeAttribute('name');
+    }
+  }
+
   focus(options) {
     this._input.focus(options);
   }
@@ -367,6 +385,18 @@ class NoSavePasswordInput extends HTMLElement {
     }
   }
 
+  _handleKeyDown(event) {
+    // Enter tuşuna basıldığında custom event tetikle
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.dispatchEvent(new CustomEvent('enter', { 
+        bubbles: true,
+        composed: true,
+        detail: { value: this._value }
+      }));
+    }
+  }
+
   _handleBeforeInput(event) {
     const selectionStart = this._input.selectionStart ?? this._value.length;
     const selectionEnd = this._input.selectionEnd ?? this._value.length;
@@ -396,8 +426,9 @@ class NoSavePasswordInput extends HTMLElement {
         break;
       case 'insertParagraph':
       case 'insertLineBreak':
-        replaceSelection('\n');
-        break;
+        // Enter tuşu için \n ekleme, sadece eventi engelle
+        event.preventDefault();
+        return;
       case 'insertFromPaste':
       case 'insertFromDrop':
         // disable-paste attribute kontrolü
@@ -621,10 +652,100 @@ class NoSavePasswordInput extends HTMLElement {
     }
     this._refreshToggleButton();
   }
+
+  /**
+   * Static method to replace an existing password input with NoSavePasswordInput
+   * Preserves JavaScript references by forwarding all property accesses
+   * @param {HTMLInputElement} originalInput - The original password input element
+   * @param {Object} options - Optional configuration (placeholder, maskChar, etc.)
+   * @returns {NoSavePasswordInput} The new component
+   */
+  static replaceInput(originalInput, options = {}) {
+    if (!(originalInput instanceof HTMLInputElement)) {
+      throw new TypeError('originalInput must be an HTMLInputElement');
+    }
+
+    // Create the new component
+    const component = document.createElement('no-save-password');
+    
+    // Copy attributes from original input
+    const attrs = ['name', 'placeholder', 'minlength', 'maxlength', 'pattern', 'required', 'disabled'];
+    attrs.forEach(attr => {
+      if (originalInput.hasAttribute(attr)) {
+        component.setAttribute(attr, originalInput.getAttribute(attr));
+      }
+    });
+
+    // Apply custom options
+    Object.entries(options).forEach(([key, value]) => {
+      if (key === 'maskChar') {
+        component.setAttribute('mask-char', value);
+      } else if (key === 'revealToggle') {
+        if (value) component.setAttribute('reveal-toggle', '');
+      } else if (key === 'disablePaste') {
+        if (value) component.setAttribute('disable-paste', '');
+      } else {
+        component.setAttribute(key, value);
+      }
+    });
+
+    // Copy initial value
+    if (originalInput.value) {
+      component.value = originalInput.value;
+    }
+
+    // Replace in DOM
+    originalInput.parentNode.replaceChild(component, originalInput);
+
+    // Create proxy to forward property accesses
+    const properties = ['value', 'disabled', 'minLength', 'maxLength', 'pattern', 'name'];
+    properties.forEach(prop => {
+      Object.defineProperty(originalInput, prop, {
+        get() { return component[prop]; },
+        set(val) { component[prop] = val; },
+        configurable: true
+      });
+    });
+
+    // Forward methods
+    const methods = ['focus', 'blur', 'checkValidity', 'reportValidity', 'setCustomValidity'];
+    methods.forEach(method => {
+      originalInput[method] = function(...args) {
+        return component[method](...args);
+      };
+    });
+
+    // Forward events from component to original input reference
+    ['input', 'change', 'focus', 'blur', 'enter', 'invalid'].forEach(eventType => {
+      component.addEventListener(eventType, (e) => {
+        const forwardedEvent = new CustomEvent(eventType, {
+          bubbles: e.bubbles,
+          cancelable: e.cancelable,
+          detail: e.detail
+        });
+        originalInput.dispatchEvent(forwardedEvent);
+      });
+    });
+
+    return component;
+  }
 }
 
 if (!customElements.get('no-save-password')) {
   customElements.define('no-save-password', NoSavePasswordInput);
 }
 
+// Dual-mode support: works as both ES6 module and normal script
+if (typeof module !== 'undefined' && module.exports) {
+  // CommonJS
+  module.exports = { NoSavePasswordInput };
+} else if (typeof define === 'function' && define.amd) {
+  // AMD
+  define([], function() { return NoSavePasswordInput; });
+} else if (typeof window !== 'undefined') {
+  // Browser global
+  window.NoSavePasswordInput = NoSavePasswordInput;
+}
+
+// ES6 module export (will be ignored in non-module contexts)
 export { NoSavePasswordInput };

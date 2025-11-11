@@ -4,7 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>No Save Password Component Demo</title>
-    <script type="module" src="./no_save_password_control.js"></script>
+    <script type="module">
+      import { NoSavePasswordInput } from './no_save_password_control.js';
+      // Make it globally available for inline scripts
+      window.NoSavePasswordInput = NoSavePasswordInput;
+    </script>
     <style>
       :root {
         /* Component Custom Properties */
@@ -274,18 +278,12 @@
       }
 
       .control-item input[type="text"],
-      .control-item input[type="number"],
-      .control-item input[type="color"] {
+      .control-item input[type="number"] {
         padding: 0.5rem 0.75rem;
         border: 1px solid #cbd5e1;
         border-radius: 4px;
         font-size: 0.875rem;
         font-family: 'Courier New', monospace;
-      }
-
-      .control-item input[type="color"] {
-        height: 2.5rem;
-        cursor: pointer;
       }
 
       .control-item input[type="checkbox"] {
@@ -487,18 +485,23 @@
                 </div>
 
                 <div class="control-item">
+                  <label for="ctrl-border-color">--no-save-password-border-color</label>
+                  <input type="text" id="ctrl-border-color" value="#cbd5e1">
+                </div>
+
+                <div class="control-item">
                   <label for="ctrl-border-radius">--no-save-password-border-radius</label>
                   <input type="text" id="ctrl-border-radius" value="6px">
                 </div>
 
                 <div class="control-item">
                   <label for="ctrl-background">--no-save-password-background</label>
-                  <input type="color" id="ctrl-background" value="#ffffff">
+                  <input type="text" id="ctrl-background" value="#ffffff">
                 </div>
 
                 <div class="control-item">
                   <label for="ctrl-color">--no-save-password-color</label>
-                  <input type="color" id="ctrl-color" value="#000000">
+                  <input type="text" id="ctrl-color" value="#000000">
                 </div>
 
                 <div class="control-item">
@@ -518,19 +521,29 @@
 
                 <div class="control-item">
                   <label for="ctrl-placeholder-color">--no-save-password-placeholder-color</label>
-                  <input type="color" id="ctrl-placeholder-color" value="#6b7280">
+                  <input type="text" id="ctrl-placeholder-color" value="#6b7280">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-box-shadow">--no-save-password-box-shadow</label>
+                  <input type="text" id="ctrl-box-shadow" value="none">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-transition">--no-save-password-transition</label>
+                  <input type="text" id="ctrl-transition" value="border-color 0.15s ease-in-out">
                 </div>
 
                 <h4 style="font-size: 0.875rem; font-weight: 600; color: #475569; margin-top: 1rem;">Focus Styles</h4>
 
                 <div class="control-item">
                   <label for="ctrl-focus-ring">--no-save-password-focus-ring</label>
-                  <input type="color" id="ctrl-focus-ring" value="#3b82f6">
+                  <input type="text" id="ctrl-focus-ring" value="#3b82f6">
                 </div>
 
                 <div class="control-item">
                   <label for="ctrl-focus-border-color">--no-save-password-focus-border-color</label>
-                  <input type="color" id="ctrl-focus-border-color" value="#3b82f6">
+                  <input type="text" id="ctrl-focus-border-color" value="#3b82f6">
                 </div>
 
                 <h4 style="font-size: 0.875rem; font-weight: 600; color: #475569; margin-top: 1rem;">Toggle Button</h4>
@@ -552,7 +565,7 @@
 
                 <div class="control-item">
                   <label for="ctrl-toggle-icon-color">--no-save-password-toggle-icon-color</label>
-                  <input type="color" id="ctrl-toggle-icon-color" value="#64748b">
+                  <input type="text" id="ctrl-toggle-icon-color" value="#64748b">
                 </div>
 
                 <div class="control-item">
@@ -562,7 +575,24 @@
 
                 <div class="control-item">
                   <label for="ctrl-toggle-active-bg">--no-save-password-toggle-active-background</label>
-                  <input type="color" id="ctrl-toggle-active-bg" value="#e2e8f0">
+                  <input type="text" id="ctrl-toggle-active-bg" value="#e2e8f0">
+                </div>
+
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #475569; margin-top: 1rem;">Disabled State</h4>
+
+                <div class="control-item">
+                  <label for="ctrl-disabled-background">--no-save-password-disabled-background</label>
+                  <input type="text" id="ctrl-disabled-background" value="#f3f4f6">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-disabled-color">--no-save-password-disabled-color</label>
+                  <input type="text" id="ctrl-disabled-color" value="#6b7280">
+                </div>
+
+                <div class="control-item">
+                  <label for="ctrl-disabled-border-color">--no-save-password-disabled-border-color</label>
+                  <input type="text" id="ctrl-disabled-border-color" value="#d1d5db">
                 </div>
               </div>
             </div>
@@ -571,18 +601,48 @@
           <!-- Preview & Code -->
           <div class="preview-section">
             <h3>LIVE PREVIEW</h3>
+            
             <div class="preview-demo">
-              <label for="playground-input" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
-                Test Input
+              <label for="playground-input-1" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                Default Style
               </label>
               <no-save-password
-                id="playground-input"
-                name="playgroundCode"
+                id="playground-input-1"
+                class="playground-input"
+                name="playgroundCode1"
                 placeholder="Enter your code"
                 mask-char="•"
                 minlength="6"
                 reveal-toggle
                 required
+              ></no-save-password>
+            </div>
+
+            <div class="preview-demo">
+              <label for="playground-input-2" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                Disabled State
+              </label>
+              <no-save-password
+                id="playground-input-2"
+                class="playground-input"
+                name="playgroundCode2"
+                placeholder="Disabled input"
+                mask-char="*"
+                disabled
+              ></no-save-password>
+            </div>
+
+            <div class="preview-demo">
+              <label for="playground-input-3" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                Custom Mask Character
+              </label>
+              <no-save-password
+                id="playground-input-3"
+                class="playground-input"
+                name="playgroundCode3"
+                placeholder="Custom mask"
+                mask-char="●"
+                reveal-toggle
               ></no-save-password>
             </div>
 
@@ -707,7 +767,7 @@
       });
 
       // Playground
-      const playgroundInput = document.getElementById('playground-input');
+      const playgroundInputs = document.querySelectorAll('.playground-input');
       const htmlOutput = document.getElementById('html-output');
       const cssOutput = document.getElementById('css-output');
       
@@ -723,6 +783,7 @@
         pattern: document.getElementById('ctrl-pattern'),
         padding: document.getElementById('ctrl-padding'),
         border: document.getElementById('ctrl-border'),
+        borderColor: document.getElementById('ctrl-border-color'),
         borderRadius: document.getElementById('ctrl-border-radius'),
         background: document.getElementById('ctrl-background'),
         color: document.getElementById('ctrl-color'),
@@ -730,6 +791,8 @@
         fontSize: document.getElementById('ctrl-font-size'),
         lineHeight: document.getElementById('ctrl-line-height'),
         placeholderColor: document.getElementById('ctrl-placeholder-color'),
+        boxShadow: document.getElementById('ctrl-box-shadow'),
+        transition: document.getElementById('ctrl-transition'),
         focusRing: document.getElementById('ctrl-focus-ring'),
         focusBorderColor: document.getElementById('ctrl-focus-border-color'),
         togglePadding: document.getElementById('ctrl-toggle-padding'),
@@ -738,6 +801,9 @@
         toggleIconColor: document.getElementById('ctrl-toggle-icon-color'),
         toggleHoverBg: document.getElementById('ctrl-toggle-hover-bg'),
         toggleActiveBg: document.getElementById('ctrl-toggle-active-bg'),
+        disabledBackground: document.getElementById('ctrl-disabled-background'),
+        disabledColor: document.getElementById('ctrl-disabled-color'),
+        disabledBorderColor: document.getElementById('ctrl-disabled-border-color'),
       };
 
       // Tab functionality
@@ -765,70 +831,79 @@
       }
 
       function updatePlayground() {
-        // Update attributes
-        if (controls.required.checked) {
-          playgroundInput.setAttribute('required', '');
-        } else {
-          playgroundInput.removeAttribute('required');
-        }
+        // Update attributes and CSS for all playground inputs
+        playgroundInputs.forEach(playgroundInput => {
+          // Update attributes
+          if (controls.required.checked) {
+            playgroundInput.setAttribute('required', '');
+          } else {
+            playgroundInput.removeAttribute('required');
+          }
 
-        if (controls.disabled.checked) {
-          playgroundInput.setAttribute('disabled', '');
-        } else {
-          playgroundInput.removeAttribute('disabled');
-        }
+          if (controls.disabled.checked) {
+            playgroundInput.setAttribute('disabled', '');
+          } else {
+            playgroundInput.removeAttribute('disabled');
+          }
 
-        if (controls.revealToggle.checked) {
-          playgroundInput.setAttribute('reveal-toggle', '');
-        } else {
-          playgroundInput.removeAttribute('reveal-toggle');
-        }
+          if (controls.revealToggle.checked) {
+            playgroundInput.setAttribute('reveal-toggle', '');
+          } else {
+            playgroundInput.removeAttribute('reveal-toggle');
+          }
 
-        if (controls.disablePaste.checked) {
-          playgroundInput.setAttribute('disable-paste', '');
-        } else {
-          playgroundInput.removeAttribute('disable-paste');
-        }
+          if (controls.disablePaste.checked) {
+            playgroundInput.setAttribute('disable-paste', '');
+          } else {
+            playgroundInput.removeAttribute('disable-paste');
+          }
 
-        playgroundInput.setAttribute('placeholder', controls.placeholder.value);
-        playgroundInput.setAttribute('mask-char', controls.maskChar.value || '•');
-        
-        if (controls.minlength.value) {
-          playgroundInput.setAttribute('minlength', controls.minlength.value);
-        } else {
-          playgroundInput.removeAttribute('minlength');
-        }
+          playgroundInput.setAttribute('placeholder', controls.placeholder.value);
+          playgroundInput.setAttribute('mask-char', controls.maskChar.value || '•');
+          
+          if (controls.minlength.value) {
+            playgroundInput.setAttribute('minlength', controls.minlength.value);
+          } else {
+            playgroundInput.removeAttribute('minlength');
+          }
 
-        if (controls.maxlength.value) {
-          playgroundInput.setAttribute('maxlength', controls.maxlength.value);
-        } else {
-          playgroundInput.removeAttribute('maxlength');
-        }
+          if (controls.maxlength.value) {
+            playgroundInput.setAttribute('maxlength', controls.maxlength.value);
+          } else {
+            playgroundInput.removeAttribute('maxlength');
+          }
 
-        if (controls.pattern.value) {
-          playgroundInput.setAttribute('pattern', controls.pattern.value);
-        } else {
-          playgroundInput.removeAttribute('pattern');
-        }
+          if (controls.pattern.value) {
+            playgroundInput.setAttribute('pattern', controls.pattern.value);
+          } else {
+            playgroundInput.removeAttribute('pattern');
+          }
 
-        // Update CSS variables
-        playgroundInput.style.setProperty('--no-save-password-padding', controls.padding.value);
-        playgroundInput.style.setProperty('--no-save-password-border', controls.border.value);
-        playgroundInput.style.setProperty('--no-save-password-border-radius', controls.borderRadius.value);
-        playgroundInput.style.setProperty('--no-save-password-background', controls.background.value);
-        playgroundInput.style.setProperty('--no-save-password-color', controls.color.value);
-        playgroundInput.style.setProperty('--no-save-password-font-family', controls.fontFamily.value);
-        playgroundInput.style.setProperty('--no-save-password-font-size', controls.fontSize.value);
-        playgroundInput.style.setProperty('--no-save-password-line-height', controls.lineHeight.value);
-        playgroundInput.style.setProperty('--no-save-password-placeholder-color', controls.placeholderColor.value);
-        playgroundInput.style.setProperty('--no-save-password-focus-ring', controls.focusRing.value);
-        playgroundInput.style.setProperty('--no-save-password-focus-border-color', controls.focusBorderColor.value);
-        playgroundInput.style.setProperty('--no-save-password-toggle-padding', controls.togglePadding.value);
-        playgroundInput.style.setProperty('--no-save-password-toggle-right', controls.toggleRight.value);
-        playgroundInput.style.setProperty('--no-save-password-toggle-icon-size', controls.toggleIconSize.value);
-        playgroundInput.style.setProperty('--no-save-password-toggle-icon-color', controls.toggleIconColor.value);
-        playgroundInput.style.setProperty('--no-save-password-toggle-hover-background', controls.toggleHoverBg.value);
-        playgroundInput.style.setProperty('--no-save-password-toggle-active-background', controls.toggleActiveBg.value);
+          // Update CSS variables
+          playgroundInput.style.setProperty('--no-save-password-padding', controls.padding.value);
+          playgroundInput.style.setProperty('--no-save-password-border', controls.border.value);
+          playgroundInput.style.setProperty('--no-save-password-border-color', controls.borderColor.value);
+          playgroundInput.style.setProperty('--no-save-password-border-radius', controls.borderRadius.value);
+          playgroundInput.style.setProperty('--no-save-password-background', controls.background.value);
+          playgroundInput.style.setProperty('--no-save-password-color', controls.color.value);
+          playgroundInput.style.setProperty('--no-save-password-font-family', controls.fontFamily.value);
+          playgroundInput.style.setProperty('--no-save-password-font-size', controls.fontSize.value);
+          playgroundInput.style.setProperty('--no-save-password-line-height', controls.lineHeight.value);
+          playgroundInput.style.setProperty('--no-save-password-placeholder-color', controls.placeholderColor.value);
+          playgroundInput.style.setProperty('--no-save-password-box-shadow', controls.boxShadow.value);
+          playgroundInput.style.setProperty('--no-save-password-transition', controls.transition.value);
+          playgroundInput.style.setProperty('--no-save-password-focus-ring', controls.focusRing.value);
+          playgroundInput.style.setProperty('--no-save-password-focus-border-color', controls.focusBorderColor.value);
+          playgroundInput.style.setProperty('--no-save-password-toggle-padding', controls.togglePadding.value);
+          playgroundInput.style.setProperty('--no-save-password-toggle-right', controls.toggleRight.value);
+          playgroundInput.style.setProperty('--no-save-password-toggle-icon-size', controls.toggleIconSize.value);
+          playgroundInput.style.setProperty('--no-save-password-toggle-icon-color', controls.toggleIconColor.value);
+          playgroundInput.style.setProperty('--no-save-password-toggle-hover-background', controls.toggleHoverBg.value);
+          playgroundInput.style.setProperty('--no-save-password-toggle-active-background', controls.toggleActiveBg.value);
+          playgroundInput.style.setProperty('--no-save-password-disabled-background', controls.disabledBackground.value);
+          playgroundInput.style.setProperty('--no-save-password-disabled-color', controls.disabledColor.value);
+          playgroundInput.style.setProperty('--no-save-password-disabled-border-color', controls.disabledBorderColor.value);
+        });
 
         // Generate HTML code
         let htmlAttrs = [];
@@ -859,6 +934,9 @@
         if (controls.border.value !== '1px solid #cbd5e1') {
           cssVars.push(`  --no-save-password-border: ${controls.border.value};`);
         }
+        if (controls.borderColor.value !== '#cbd5e1') {
+          cssVars.push(`  --no-save-password-border-color: ${controls.borderColor.value};`);
+        }
         if (controls.borderRadius.value !== '6px') {
           cssVars.push(`  --no-save-password-border-radius: ${controls.borderRadius.value};`);
         }
@@ -879,6 +957,12 @@
         }
         if (controls.placeholderColor.value !== '#6b7280') {
           cssVars.push(`  --no-save-password-placeholder-color: ${controls.placeholderColor.value};`);
+        }
+        if (controls.boxShadow.value !== 'none') {
+          cssVars.push(`  --no-save-password-box-shadow: ${controls.boxShadow.value};`);
+        }
+        if (controls.transition.value !== 'border-color 0.15s ease-in-out') {
+          cssVars.push(`  --no-save-password-transition: ${controls.transition.value};`);
         }
         if (controls.focusRing.value !== '#3b82f6') {
           cssVars.push(`  --no-save-password-focus-ring: ${controls.focusRing.value};`);
@@ -903,6 +987,15 @@
         }
         if (controls.toggleActiveBg.value !== '#e2e8f0') {
           cssVars.push(`  --no-save-password-toggle-active-background: ${controls.toggleActiveBg.value};`);
+        }
+        if (controls.disabledBackground.value !== '#f3f4f6') {
+          cssVars.push(`  --no-save-password-disabled-background: ${controls.disabledBackground.value};`);
+        }
+        if (controls.disabledColor.value !== '#6b7280') {
+          cssVars.push(`  --no-save-password-disabled-color: ${controls.disabledColor.value};`);
+        }
+        if (controls.disabledBorderColor.value !== '#d1d5db') {
+          cssVars.push(`  --no-save-password-disabled-border-color: ${controls.disabledBorderColor.value};`);
         }
 
         if (cssVars.length > 0) {
@@ -945,6 +1038,114 @@
 
       // Initial render
       updatePlayground();
+
+      // ============================================
+      // Legacy Input Replacement Demo
+      // ============================================
+      
+      // Simulate a legacy login form
+      const legacyForm = document.createElement('div');
+      legacyForm.id = 'legacy-demo';
+      legacyForm.style.cssText = 'margin: 3rem 0; padding: 2rem; border: 2px dashed #e5e7eb; border-radius: 8px; background: #f9fafb;';
+      legacyForm.innerHTML = `
+        <h3 style="margin-top: 0; color: #1f2937;">Legacy Input Replacement Demo</h3>
+        <p style="color: #6b7280; margin-bottom: 1rem;">
+          This example demonstrates replacing an existing password input while preserving JavaScript references.
+          The original input reference remains valid even after replacement.
+        </p>
+
+        <div style="margin-bottom: 1.5rem; padding: 1rem; background: #1e293b; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+          <h4 style="margin: 0 0 0.75rem 0; color: #94a3b8; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">💡 Code Example</h4>
+          <pre style="margin: 0; color: #e2e8f0; font-size: 0.8125rem; overflow-x: auto; line-height: 1.6; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;"><code style="background: none;"><span style="color: #64748b;">// Legacy code holds reference to password input</span>
+<span style="color: #f1f5f9;">const</span> <span style="color: #38bdf8;">passwordInput</span> <span style="color: #f1f5f9;">=</span> <span style="color: #e2e8f0;">document</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">getElementById</span><span style="color: #cbd5e1;">(</span><span style="color: #86efac;">'legacy-password'</span><span style="color: #cbd5e1;">);</span>
+
+<span style="color: #64748b;">// Add event listeners (legacy code)</span>
+<span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">addEventListener</span><span style="color: #cbd5e1;">(</span><span style="color: #86efac;">'input'</span><span style="color: #cbd5e1;">,</span> <span style="color: #e2e8f0;">handlePasswordInput</span><span style="color: #cbd5e1;">);</span>
+<span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">addEventListener</span><span style="color: #cbd5e1;">(</span><span style="color: #86efac;">'enter'</span><span style="color: #cbd5e1;">,</span> <span style="color: #e2e8f0;">handleEnterKey</span><span style="color: #cbd5e1;">);</span>
+
+<span style="color: #64748b;">// Replace with NoSavePasswordInput - references still work!</span>
+<span style="color: #e2e8f0;">NoSavePasswordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">replaceInput</span><span style="color: #cbd5e1;">(</span><span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">,</span> <span style="color: #cbd5e1;">{</span>
+  <span style="color: #38bdf8;">revealToggle</span><span style="color: #cbd5e1;">:</span> <span style="color: #f472b6;">true</span><span style="color: #cbd5e1;">,</span>
+  <span style="color: #38bdf8;">maskChar</span><span style="color: #cbd5e1;">:</span> <span style="color: #86efac;">'●'</span>
+<span style="color: #cbd5e1;">});</span>
+
+<span style="color: #64748b;">// All of these still work:</span>
+<span style="color: #e2e8f0;">console</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">log</span><span style="color: #cbd5e1;">(</span><span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #38bdf8;">value</span><span style="color: #cbd5e1;">);</span>     <span style="color: #64748b;">// ✓ Works</span>
+<span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">focus</span><span style="color: #cbd5e1;">();</span>                 <span style="color: #64748b;">// ✓ Works</span>
+<span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">addEventListener</span><span style="color: #cbd5e1;">(...);</span>   <span style="color: #64748b;">// ✓ Works</span></code></pre>
+        </div>
+        
+        <form id="legacy-login-form" style="max-width: 400px;">
+          <div style="margin-bottom: 1rem;">
+            <label for="legacy-username" style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">Username</label>
+            <input type="text" id="legacy-username" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px;">
+          </div>
+          
+          <div style="margin-bottom: 1rem;">
+            <label for="legacy-password" style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">Password</label>
+            <input type="password" id="legacy-password" placeholder="Enter password" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px;">
+          </div>
+          
+          <button type="submit" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">
+            Login
+          </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; padding: 1rem; background: white; border-radius: 6px; border: 1px solid #e5e7eb;">
+          <h4 style="margin-top: 0; font-size: 0.875rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">JavaScript Console Output</h4>
+          <pre id="legacy-console" style="margin: 0; padding: 1rem; background: #1f2937; color: #10b981; border-radius: 4px; font-size: 0.875rem; overflow-x: auto; min-height: 100px;"></pre>
+        </div>
+      `;
+      
+      document.querySelector('.container').appendChild(legacyForm);
+
+      // Simulate legacy JavaScript that holds reference to password input
+      const passwordInput = document.getElementById('legacy-password');
+      
+      // Log initial state
+      const consoleEl = document.getElementById('legacy-console');
+      function log(message) {
+        consoleEl.textContent += message + '\n';
+      }
+
+      log('> Legacy code initialized');
+      log('> passwordInput = ' + passwordInput.tagName);
+      log('');
+      
+      // Legacy event listeners (these should still work after replacement)
+      passwordInput.addEventListener('input', (e) => {
+        log('> Legacy input event: value = "' + e.target.value + '"');
+      });
+
+      passwordInput.addEventListener('enter', (e) => {
+        log('> Legacy enter event detected! value = "' + e.detail.value + '"');
+      });
+
+      // Replace the input after a short delay (simulating DOMContentLoaded or similar)
+      setTimeout(() => {
+        log('> Replacing password input with NoSavePasswordInput...');
+        
+        NoSavePasswordInput.replaceInput(passwordInput, {
+          revealToggle: true,
+          maskChar: '●'
+        });
+        
+        log('> ✓ Replacement complete!');
+        log('> passwordInput.tagName = ' + passwordInput.tagName + ' (still INPUT!)');
+        log('> passwordInput.value getter/setter hijacked');
+        log('');
+        log('> Try typing in the password field...');
+      }, 1000);
+
+      // Simulate form submission
+      document.getElementById('legacy-login-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        log('');
+        log('> Form submitted!');
+        log('> Username: ' + document.getElementById('legacy-username').value);
+        log('> Password: ' + passwordInput.value); // This should work!
+        log('> passwordInput reference still valid: ' + (passwordInput !== null));
+      });
     </script>
   </body>
 </html>

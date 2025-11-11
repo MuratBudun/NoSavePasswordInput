@@ -315,8 +315,13 @@ input.addEventListener('input', (e) => {
 // Listen for Enter key press
 input.addEventListener('enter', (e) => {
   console.log('Enter pressed, value:', e.detail.value);
-  // You can submit form or perform other actions
+  // Custom enter event is fired before form submission
+  // You can prevent default form submission if needed
 });
+
+// Note: Form is automatically submitted when Enter is pressed (native behavior)
+// The component mimics standard input behavior by calling form.requestSubmit()
+
 
 // Listen for invalid input
 input.addEventListener('invalid', (e) => {
@@ -331,7 +336,7 @@ input.addEventListener('change', (e) => {
 
 **Available Events:**
 - `input` - Fired when the value changes
-- `enter` - Fired when Enter key is pressed (custom event with `detail.value`)
+- `enter` - Fired when Enter key is pressed (custom event with `detail.value`). **Note:** The form is automatically submitted after this event, mimicking native input behavior.
 - `change` - Fired when focus is lost and value has changed
 - `invalid` - Fired when validation fails
 - `focus` - Fired when input receives focus

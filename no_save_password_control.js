@@ -386,14 +386,27 @@ class NoSavePasswordInput extends HTMLElement {
   }
 
   _handleKeyDown(event) {
-    // Enter tuşuna basıldığında custom event tetikle
+    // Enter tuşuna basıldığında custom event tetikle ve formu submit et
     if (event.key === 'Enter') {
       event.preventDefault();
+      
+      // Custom enter event
       this.dispatchEvent(new CustomEvent('enter', { 
         bubbles: true,
         composed: true,
         detail: { value: this._value }
       }));
+      
+      // Form submit davranışı (native input gibi)
+      const form = this._internals.form;
+      if (form) {
+        // requestSubmit varsa kullan (validation trigger eder), yoksa submit
+        if (form.requestSubmit) {
+          form.requestSubmit();
+        } else {
+          form.submit();
+        }
+      }
     }
   }
 

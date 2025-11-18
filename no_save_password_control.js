@@ -760,5 +760,8 @@ if (typeof module !== 'undefined' && module.exports) {
   window.NoSavePasswordInput = NoSavePasswordInput;
 }
 
-// ES6 module export (will be ignored in non-module contexts)
+// ES6 module export
+// For React, Vue, and other modern frameworks that support ES modules
 export { NoSavePasswordInput };
+export default NoSavePasswordInput;
+

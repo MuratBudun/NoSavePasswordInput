@@ -24,54 +24,85 @@ This component prevents browser autofill and password saving mechanisms while ma
 
 ## Installation
 
-### Direct Usage
+### Download Files
 
-Download `no_save_password_control.js` and include it in your HTML:
+Download the appropriate file based on your use case:
 
-#### As ES6 Module (Recommended)
+| File | Size | Use Case |
+|------|------|----------|
+| `no_save_password_control.js` | ~25 KB | Source code with ES6 exports (for React, Vue, build tools) |
+| `no_save_password_control.module.min.js` | ~16 KB | Minified with exports (for modern frameworks) |
+| `no_save_password_control.min.js` | ~16 KB | Minified without exports (for vanilla HTML) |
 
-```html
-<script type="module" src="./no_save_password_control.js"></script>
+### For React, Vue, or Modern Frameworks
+
+Use the **module version** with ES6 imports:
+
+```javascript
+// Import the minified module version
+import NoSavePasswordInput from './no_save_password_control.module.min.js';
+// or named import
+import { NoSavePasswordInput } from './no_save_password_control.module.min.js';
+
+// React example
+function App() {
+  return (
+    <form>
+      <no-save-password name="password" reveal-toggle required />
+      <button type="submit">Login</button>
+    </form>
+  );
+}
 ```
 
-Then import and use:
+### For Webpack, Vite, Rollup (with build tools)
+
+Import the source file and let your bundler handle it:
+
+```javascript
+import { NoSavePasswordInput } from './no_save_password_control.js';
+
+// Use the component
+document.body.innerHTML = '<no-save-password name="pwd"></no-save-password>';
+```
+
+### For Vanilla HTML (no build tools)
+
+Use the **standalone minified version** without exports:
 
 ```html
-<script type="module">
-  import { NoSavePasswordInput } from './no_save_password_control.js';
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="./no_save_password_control.min.js"></script>
+</head>
+<body>
+  <form>
+    <no-save-password name="password" reveal-toggle></no-save-password>
+  </form>
   
-  // Access the class if needed
-  console.log(NoSavePasswordInput);
-  
-  // Component is automatically registered as <no-save-password>
-</script>
+  <script>
+    // Component is automatically registered
+    // NoSavePasswordInput is available globally
+    
+    // Replace existing input
+    const oldInput = document.getElementById('password');
+    NoSavePasswordInput.replaceInput(oldInput, {
+      revealToggle: true,
+      maskChar: '●'
+    });
+  </script>
+</body>
+</html>
 ```
 
-#### As Normal Script
-
-```html
-<script src="./no_save_password_control.js"></script>
-```
-
-Then access globally:
-
-```html
-<script>
-  // Component is automatically registered as <no-save-password>
-  // Class is available globally as window.NoSavePasswordInput
-  
-  const input = document.createElement('no-save-password');
-  console.log(NoSavePasswordInput); // Available globally
-</script>
-```
-
-#### CommonJS (Node.js)
+### CommonJS (Node.js)
 
 ```javascript
 const { NoSavePasswordInput } = require('./no_save_password_control.js');
 ```
 
-#### AMD (RequireJS)
+### AMD (RequireJS)
 
 ```javascript
 define(['./no_save_password_control'], function(NoSavePasswordInput) {
@@ -79,7 +110,28 @@ define(['./no_save_password_control'], function(NoSavePasswordInput) {
 });
 ```
 
-The component automatically detects the environment and works in all contexts.
+### Which File Should I Use?
+
+| Scenario | File to Use | Why |
+|----------|-------------|-----|
+| React, Vue, Svelte, Angular (production) | `no_save_password_control.module.min.js` | Minified with exports |
+| React, Vue, Svelte, Angular (development) | `no_save_password_control.js` | Source with exports for debugging |
+| Webpack, Vite, Rollup | `no_save_password_control.js` | Let bundler optimize |
+| Plain HTML (no build tools) | `no_save_password_control.min.js` | No `export` syntax errors |
+| Node.js (CommonJS) | `no_save_password_control.js` | Has `module.exports` |
+
+### Building from Source
+
+If you modify the source code, rebuild using:
+
+```powershell
+# PowerShell
+.\build.ps1
+```
+
+This creates both versions:
+- `no_save_password_control.module.min.js` (with exports)
+- `no_save_password_control.min.js` (without exports)
 
 ### Quick Start
 

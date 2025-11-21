@@ -270,7 +270,7 @@ class NoSavePasswordInput extends HTMLElement {
         this._updateToggleVisibility();
         break;
       case 'name':
-        // name attribute sadece form submission için kullanılır
+        // name attribute is only used for form submission
         break;
       default:
         this._updateValidity();
@@ -432,7 +432,7 @@ class NoSavePasswordInput extends HTMLElement {
   }
 
   _handleKeyDown(event) {
-    // Enter tuşuna basıldığında custom event tetikle ve formu submit et
+    // Trigger custom event and submit form when Enter key is pressed
     if (event.key === 'Enter') {
       event.preventDefault();
       
@@ -443,10 +443,10 @@ class NoSavePasswordInput extends HTMLElement {
         detail: { value: this._value }
       }));
       
-      // Form submit davranışı (native input gibi)
+      // Form submit behavior (like native input)
       const form = this._internals.form;
       if (form) {
-        // requestSubmit varsa kullan (validation trigger eder), yoksa submit
+        // Use requestSubmit if available (triggers validation), otherwise submit
         if (form.requestSubmit) {
           form.requestSubmit();
         } else {
@@ -485,11 +485,11 @@ class NoSavePasswordInput extends HTMLElement {
         break;
       case 'insertParagraph':
       case 'insertLineBreak':
-        // Enter tuşu için \n ekleme, sadece eventi engelle
+        // Don't insert \n for Enter key, just prevent the event
         event.preventDefault();
         return;
       case 'insertFromPaste':
-        // enable-paste attribute kontrolü (varsayılan olarak disabled)
+        // Check enable-paste attribute (disabled by default)
         if (!this.hasAttribute('enable-paste')) {
           event.preventDefault();
           return;
@@ -497,7 +497,7 @@ class NoSavePasswordInput extends HTMLElement {
         replaceSelection(event.data ?? '');
         break;
       case 'insertFromDrop':
-        // enable-drop attribute kontrolü (varsayılan olarak disabled)
+        // Check enable-drop attribute (disabled by default)
         if (!this.hasAttribute('enable-drop')) {
           event.preventDefault();
           return;
@@ -607,7 +607,7 @@ class NoSavePasswordInput extends HTMLElement {
     const pattern = this.pattern;
     if (!message && pattern) {
       try {
-        const regex = new RegExp(`^${pattern}$`);  // (?:) kaldırıldı
+        const regex = new RegExp(`^${pattern}$`);  // Removed (?:) wrapper
         if (!regex.test(this._value)) {
           issues.patternMismatch = true;
           message = this.getAttribute('data-pattern-message') || 'Password format is invalid.';
@@ -637,7 +637,7 @@ class NoSavePasswordInput extends HTMLElement {
     this._history = this._history.slice(0, this._historyIndex + 1);
     this._history.push(state);
     
-    // History limitini uygula
+    // Apply history limit
     const MAX_HISTORY = 50;
     if (this._history.length > MAX_HISTORY) {
       this._history = this._history.slice(-MAX_HISTORY);

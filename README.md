@@ -15,7 +15,7 @@ This component prevents browser autofill and password saving mechanisms while ma
 - Prevents browser password manager interference
 - Custom masking characters with configurable reveal toggle
 - Full form integration and validation support (required, minlength, maxlength, pattern)
-- Copy/paste control with disable-paste attribute
+- **Secure by default**: copy/paste/drag/drop disabled by default, enable with `enable-*` attributes
 - Comprehensive CSS customization through custom properties
 - Accessibility support with ARIA attributes
 - Undo/redo history management
@@ -165,7 +165,43 @@ This creates both versions:
 | `required` | boolean | - | Makes the field mandatory |
 | `disabled` | boolean | - | Disables the input |
 | `reveal-toggle` | boolean | - | Shows toggle button to reveal/hide text |
-| `disable-paste` | boolean | - | Prevents paste operations |
+| `enable-paste` | boolean | - | Enables paste operations (disabled by default) |
+| `enable-copy` | boolean | - | Enables copy operations (only when revealed, disabled by default) |
+| `enable-drag` | boolean | - | Enables drag operations (only when revealed, disabled by default) |
+| `enable-drop` | boolean | - | Enables drop operations (disabled by default) |
+
+**Security Note:** By default, paste, copy, drag, and drop operations are **disabled** for security. Use the `enable-*` attributes to explicitly allow these operations when needed.
+
+**Important:** `enable-copy` and `enable-drag` only work when the password is **revealed** (visible). When masked, these operations are always blocked for security.
+
+**Example - Enable specific operations:**
+```html
+<!-- Allow paste but prevent copy -->
+<no-save-password
+  name="code"
+  enable-paste
+></no-save-password>
+
+<!-- Allow copy when revealed (requires reveal-toggle) -->
+<no-save-password
+  name="code"
+  reveal-toggle
+  enable-copy
+></no-save-password>
+
+<!-- Allow copy and paste, but prevent drag/drop -->
+<no-save-password
+  name="code"
+  enable-paste
+  enable-copy
+  reveal-toggle
+></no-save-password>
+
+<!-- Maximum security: all disabled (default behavior) -->
+<no-save-password
+  name="code"
+></no-save-password>
+```
 
 ## CSS Custom Properties
 

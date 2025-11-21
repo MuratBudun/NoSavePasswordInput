@@ -165,7 +165,7 @@ class NoSavePasswordInput extends HTMLElement {
   static formAssociated = true;
 
   static get observedAttributes() {
-    return ['disabled', 'placeholder', 'mask-char', 'minlength', 'maxlength', 'pattern', 'reveal-toggle', 'disable-paste', 'name'];
+    return ['disabled', 'placeholder', 'mask-char', 'minlength', 'maxlength', 'pattern', 'reveal-toggle', 'enable-paste', 'enable-copy', 'enable-drag', 'enable-drop', 'name'];
   }
 
   constructor() {
@@ -188,6 +188,12 @@ class NoSavePasswordInput extends HTMLElement {
     this._handleBlur = this._handleBlur.bind(this);
     this._handleToggle = this._handleToggle.bind(this);
     this._handleKeyDown = this._handleKeyDown.bind(this);
+    this._handleCopy = this._handleCopy.bind(this);
+    this._handlePaste = this._handlePaste.bind(this);
+    this._handleDrag = this._handleDrag.bind(this);
+    this._handleDragStart = this._handleDragStart.bind(this);
+    this._handleDrop = this._handleDrop.bind(this);
+    this._handleDragOver = this._handleDragOver.bind(this);
 
     this._history = [{ value: this._value, caret: 0 }];
     this._historyIndex = 0;
@@ -200,6 +206,10 @@ class NoSavePasswordInput extends HTMLElement {
     this._input.addEventListener('blur', this._handleBlur);
     this._input.addEventListener('copy', this._handleCopy);
     this._input.addEventListener('paste', this._handlePaste);
+    this._input.addEventListener('drag', this._handleDrag);
+    this._input.addEventListener('dragstart', this._handleDragStart);
+    this._input.addEventListener('drop', this._handleDrop);
+    this._input.addEventListener('dragover', this._handleDragOver);
     if (this._toggleButton) {
       this._toggleButton.addEventListener('click', this._handleToggle);
     }
@@ -228,6 +238,10 @@ class NoSavePasswordInput extends HTMLElement {
     this._input.removeEventListener('blur', this._handleBlur);
     this._input.removeEventListener('copy', this._handleCopy);
     this._input.removeEventListener('paste', this._handlePaste);
+    this._input.removeEventListener('drag', this._handleDrag);
+    this._input.removeEventListener('dragstart', this._handleDragStart);
+    this._input.removeEventListener('drop', this._handleDrop);
+    this._input.removeEventListener('dragover', this._handleDragOver);
     if (this._toggleButton) {
       this._toggleButton.removeEventListener('click', this._handleToggle);
     }
@@ -376,11 +390,43 @@ class NoSavePasswordInput extends HTMLElement {
   }
 
   _handleCopy(event) {
-    event.preventDefault();
+    // Copy: requires enable-copy attribute AND password must be revealed
+    if (!this.hasAttribute('enable-copy') || !this._isRevealed) {
+      event.preventDefault();
+    }
   }
 
   _handlePaste(event) {
-    if (this.hasAttribute('disable-paste')) {
+    // Paste is disabled by default, enable with enable-paste attribute
+    if (!this.hasAttribute('enable-paste')) {
+      event.preventDefault();
+    }
+  }
+
+  _handleDrag(event) {
+    // Drag: requires enable-drag attribute AND password must be revealed
+    if (!this.hasAttribute('enable-drag') || !this._isRevealed) {
+      event.preventDefault();
+    }
+  }
+
+  _handleDragStart(event) {
+    // Drag start: requires enable-drag attribute AND password must be revealed
+    if (!this.hasAttribute('enable-drag') || !this._isRevealed) {
+      event.preventDefault();
+    }
+  }
+
+  _handleDrop(event) {
+    // Drop is disabled by default, enable with enable-drop attribute
+    if (!this.hasAttribute('enable-drop')) {
+      event.preventDefault();
+    }
+  }
+
+  _handleDragOver(event) {
+    // Dragover is disabled by default, enable with enable-drop attribute
+    if (!this.hasAttribute('enable-drop')) {
       event.preventDefault();
     }
   }
@@ -443,9 +489,16 @@ class NoSavePasswordInput extends HTMLElement {
         event.preventDefault();
         return;
       case 'insertFromPaste':
+        // enable-paste attribute kontrolü (varsayılan olarak disabled)
+        if (!this.hasAttribute('enable-paste')) {
+          event.preventDefault();
+          return;
+        }
+        replaceSelection(event.data ?? '');
+        break;
       case 'insertFromDrop':
-        // disable-paste attribute kontrolü
-        if (this.hasAttribute('disable-paste')) {
+        // enable-drop attribute kontrolü (varsayılan olarak disabled)
+        if (!this.hasAttribute('enable-drop')) {
           event.preventDefault();
           return;
         }

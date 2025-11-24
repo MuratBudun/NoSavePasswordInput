@@ -55,9 +55,10 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
       margin-bottom: 2rem;
+      margin-top: 2rem;
     }
 
     .card {
@@ -187,7 +188,7 @@
 
     .playground-grid {
       display: grid;
-      grid-template-columns: 400px 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 2rem;
       align-items: start;
     }
@@ -342,6 +343,16 @@
       width: 1.125rem;
       height: 1.125rem;
       cursor: pointer;
+    }
+
+    .control-item input[type="checkbox"]:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .control-item label:has(input[type="checkbox"]:disabled) {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .preview-section {
@@ -541,6 +552,15 @@
                   <label>
                     <input type="checkbox" id="ctrl-reveal-toggle" checked>
                     reveal-toggle
+                    <span class="info" id="reveal-toggle-info">Display password visibility toggle</span>
+                  </label>
+                </div>
+
+                <div class="control-item">
+                  <label>
+                    <input type="checkbox" id="ctrl-native-mode">
+                    native-mode
+                    <span class="info">Allows all operations (copy/paste/drag/drop) like standard password input (disables reveal-toggle)</span>
                   </label>
                 </div>
 
@@ -767,12 +787,15 @@
               </div>
 
               <div
-                style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; font-size: 0.875rem; color: #856404;">
-                <strong>Copy/Paste/Drag/Drop Test:</strong><br>
+                style="background: #dbeafe; border: 1px solid #3b82f6; border-radius: 6px; padding: 1rem; margin-top: 1rem; font-size: 0.875rem; color: #1e40af;">
+                <strong>🔐 Security & Copy/Paste/Drag/Drop Test:</strong><br><br>
+                <strong style="color: #3b82f6;">native-mode OFF:</strong> Copy/paste/drag/drop disabled by default (secure)<br>
+                <strong style="color: #10b981;">native-mode ON:</strong> All operations allowed (like standard password input)<br><br>
                 Check the enable-* checkboxes in Configure to test copy/paste/drag/drop operations.
                 <span style="color: #dc3545; font-weight: 500;">All operations are disabled by default.</span><br>
                 <strong>Important:</strong> Copy and drag operations only work when the password is
-                <strong>revealed</strong> (with reveal-toggle).
+                <strong>revealed</strong> (with reveal-toggle).<br>
+                <span style="font-size: 0.8125rem; color: #64748b;">Toggle native-mode in Configure tab and try copying/pasting above!</span>
               </div>
             </div>
           </div>
@@ -916,6 +939,7 @@
         required: document.getElementById('ctrl-required'),
         disabled: document.getElementById('ctrl-disabled'),
         revealToggle: document.getElementById('ctrl-reveal-toggle'),
+        nativeMode: document.getElementById('ctrl-native-mode'),
         enablePaste: document.getElementById('ctrl-enable-paste'),
         enableCopy: document.getElementById('ctrl-enable-copy'),
         enableDrag: document.getElementById('ctrl-enable-drag'),
@@ -993,6 +1017,19 @@
       }
 
       function updatePlayground() {
+        // Update reveal-toggle checkbox state based on native-mode
+        const nativeModeEnabled = controls.nativeMode.checked;
+        controls.revealToggle.disabled = nativeModeEnabled;
+        
+        if (nativeModeEnabled) {
+          controls.revealToggle.checked = false;
+          document.getElementById('reveal-toggle-info').textContent = 'Not functional in native-mode (browser handles masking)';
+          document.getElementById('reveal-toggle-info').style.color = '#9ca3af';
+        } else {
+          document.getElementById('reveal-toggle-info').textContent = 'Display password visibility toggle';
+          document.getElementById('reveal-toggle-info').style.color = '';
+        }
+        
         // Update attributes and CSS for all playground inputs
         playgroundInputs.forEach(playgroundInput => {
           // Update attributes
@@ -1012,6 +1049,14 @@
             playgroundInput.setAttribute('reveal-toggle', '');
           } else {
             playgroundInput.removeAttribute('reveal-toggle');
+          }
+
+          if (controls.nativeMode.checked) {
+            playgroundInput.setAttribute('native-mode', '');
+            console.log('✅ native-mode enabled for:', playgroundInput.id);
+          } else {
+            playgroundInput.removeAttribute('native-mode');
+            console.log('🔒 native-mode disabled for:', playgroundInput.id);
           }
 
           if (controls.enablePaste.checked) {
@@ -1094,6 +1139,7 @@
         if (controls.maxlength.value) htmlAttrs.push(`  maxlength="${controls.maxlength.value}"`);
         if (controls.pattern.value) htmlAttrs.push(`  pattern="${escapeHtml(controls.pattern.value)}"`);
         if (controls.revealToggle.checked) htmlAttrs.push(`  reveal-toggle`);
+        if (controls.nativeMode.checked) htmlAttrs.push(`  native-mode`);
         if (controls.enablePaste.checked) htmlAttrs.push(`  enable-paste`);
         if (controls.enableCopy.checked) htmlAttrs.push(`  enable-copy`);
         if (controls.enableDrag.checked) htmlAttrs.push(`  enable-drag`);

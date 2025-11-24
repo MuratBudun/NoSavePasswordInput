@@ -165,7 +165,7 @@ class NoSavePasswordInput extends HTMLElement {
   static formAssociated = true;
 
   static get observedAttributes() {
-    return ['disabled', 'placeholder', 'mask-char', 'minlength', 'maxlength', 'pattern', 'reveal-toggle', 'enable-paste', 'enable-copy', 'enable-drag', 'enable-drop', 'name'];
+    return ['disabled', 'placeholder', 'mask-char', 'minlength', 'maxlength', 'pattern', 'reveal-toggle', 'enable-paste', 'enable-copy', 'enable-drag', 'enable-drop', 'native-mode', 'name'];
   }
 
   constructor() {
@@ -189,6 +189,7 @@ class NoSavePasswordInput extends HTMLElement {
     this._handleToggle = this._handleToggle.bind(this);
     this._handleKeyDown = this._handleKeyDown.bind(this);
     this._handleCopy = this._handleCopy.bind(this);
+    this._handleCut = this._handleCut.bind(this);
     this._handlePaste = this._handlePaste.bind(this);
     this._handleDrag = this._handleDrag.bind(this);
     this._handleDragStart = this._handleDragStart.bind(this);
@@ -205,6 +206,7 @@ class NoSavePasswordInput extends HTMLElement {
     this._input.addEventListener('focus', this._handleFocus);
     this._input.addEventListener('blur', this._handleBlur);
     this._input.addEventListener('copy', this._handleCopy);
+    this._input.addEventListener('cut', this._handleCut);
     this._input.addEventListener('paste', this._handlePaste);
     this._input.addEventListener('drag', this._handleDrag);
     this._input.addEventListener('dragstart', this._handleDragStart);
@@ -226,6 +228,7 @@ class NoSavePasswordInput extends HTMLElement {
       this._toggleButton.disabled = this.disabled;
     }
 
+    this._updateInputType();
     this._renderMaskedValue(this._value.length);
     this._updateToggleVisibility();
     this._updateValidity();
@@ -237,6 +240,7 @@ class NoSavePasswordInput extends HTMLElement {
     this._input.removeEventListener('focus', this._handleFocus);
     this._input.removeEventListener('blur', this._handleBlur);
     this._input.removeEventListener('copy', this._handleCopy);
+    this._input.removeEventListener('cut', this._handleCut);
     this._input.removeEventListener('paste', this._handlePaste);
     this._input.removeEventListener('drag', this._handleDrag);
     this._input.removeEventListener('dragstart', this._handleDragStart);
@@ -268,6 +272,9 @@ class NoSavePasswordInput extends HTMLElement {
         break;
       case 'reveal-toggle':
         this._updateToggleVisibility();
+        break;
+      case 'native-mode':
+        this._updateInputType();
         break;
       case 'name':
         // name attribute is only used for form submission
@@ -354,6 +361,10 @@ class NoSavePasswordInput extends HTMLElement {
     }
   }
 
+  get isNativeMode() {
+    return this.hasAttribute('native-mode');
+  }
+
   focus(options) {
     this._input.focus(options);
   }
@@ -390,42 +401,71 @@ class NoSavePasswordInput extends HTMLElement {
   }
 
   _handleCopy(event) {
-    // Copy: requires enable-copy attribute AND password must be revealed
+    // Copy: in native-mode always allowed, otherwise requires enable-copy attribute AND password must be revealed
+    if (this.isNativeMode) {
+      return; // Allow copy in native mode
+    }
+    if (!this.hasAttribute('enable-copy') || !this._isRevealed) {
+      event.preventDefault();
+    }
+  }
+
+  _handleCut(event) {
+    // Cut: in native-mode always allowed, otherwise requires enable-copy attribute AND password must be revealed
+    // Cut is treated same as copy for security (both expose the password)
+    if (this.isNativeMode) {
+      return; // Allow cut in native mode
+    }
     if (!this.hasAttribute('enable-copy') || !this._isRevealed) {
       event.preventDefault();
     }
   }
 
   _handlePaste(event) {
-    // Paste is disabled by default, enable with enable-paste attribute
+    // Paste: in native-mode always allowed, otherwise disabled by default (enable with enable-paste attribute)
+    if (this.isNativeMode) {
+      return; // Allow paste in native mode
+    }
     if (!this.hasAttribute('enable-paste')) {
       event.preventDefault();
     }
   }
 
   _handleDrag(event) {
-    // Drag: requires enable-drag attribute AND password must be revealed
+    // Drag: in native-mode always allowed, otherwise requires enable-drag attribute AND password must be revealed
+    if (this.isNativeMode) {
+      return; // Allow drag in native mode
+    }
     if (!this.hasAttribute('enable-drag') || !this._isRevealed) {
       event.preventDefault();
     }
   }
 
   _handleDragStart(event) {
-    // Drag start: requires enable-drag attribute AND password must be revealed
+    // Drag start: in native-mode always allowed, otherwise requires enable-drag attribute AND password must be revealed
+    if (this.isNativeMode) {
+      return; // Allow drag start in native mode
+    }
     if (!this.hasAttribute('enable-drag') || !this._isRevealed) {
       event.preventDefault();
     }
   }
 
   _handleDrop(event) {
-    // Drop is disabled by default, enable with enable-drop attribute
+    // Drop: in native-mode always allowed, otherwise disabled by default (enable with enable-drop attribute)
+    if (this.isNativeMode) {
+      return; // Allow drop in native mode
+    }
     if (!this.hasAttribute('enable-drop')) {
       event.preventDefault();
     }
   }
 
   _handleDragOver(event) {
-    // Dragover is disabled by default, enable with enable-drop attribute
+    // Dragover: in native-mode always allowed, otherwise disabled by default (enable with enable-drop attribute)
+    if (this.isNativeMode) {
+      return; // Allow dragover in native mode
+    }
     if (!this.hasAttribute('enable-drop')) {
       event.preventDefault();
     }
@@ -489,16 +529,16 @@ class NoSavePasswordInput extends HTMLElement {
         event.preventDefault();
         return;
       case 'insertFromPaste':
-        // Check enable-paste attribute (disabled by default)
-        if (!this.hasAttribute('enable-paste')) {
+        // Check enable-paste attribute (disabled by default), or allow in native-mode
+        if (!this.isNativeMode && !this.hasAttribute('enable-paste')) {
           event.preventDefault();
           return;
         }
         replaceSelection(event.data ?? '');
         break;
       case 'insertFromDrop':
-        // Check enable-drop attribute (disabled by default)
-        if (!this.hasAttribute('enable-drop')) {
+        // Check enable-drop attribute (disabled by default), or allow in native-mode
+        if (!this.isNativeMode && !this.hasAttribute('enable-drop')) {
           event.preventDefault();
           return;
         }
@@ -567,7 +607,9 @@ class NoSavePasswordInput extends HTMLElement {
   }
 
   _renderMaskedValue(caretPosition) {
-    const displayValue = this._isRevealed ? this._value : this._maskChar.repeat(this._value.length);
+    // In native-mode, browser handles masking via type="password", so just show the actual value
+    // In secure mode, we manually mask with custom character
+    const displayValue = (this.isNativeMode || this._isRevealed) ? this._value : this._maskChar.repeat(this._value.length);
     this._input.value = displayValue;
     if (typeof caretPosition === 'number') {
       this._input.setSelectionRange(caretPosition, caretPosition);
@@ -709,14 +751,46 @@ class NoSavePasswordInput extends HTMLElement {
     if (!this._toggleButton) {
       return;
     }
-    const shouldShow = this.hasAttribute('reveal-toggle');
+    
+    // Toggle is only functional in secure mode with reveal-toggle attribute
+    // In native-mode, browser handles masking, so toggle is not needed
+    const shouldShow = !this.isNativeMode && this.hasAttribute('reveal-toggle');
+    
     this._toggleButton.hidden = !shouldShow;
     this._toggleButton.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+    
     if (!shouldShow && this._isRevealed) {
       this._isRevealed = false;
       this._renderMaskedValue(this._input.selectionStart ?? this._value.length);
     }
     this._refreshToggleButton();
+  }
+
+  _updateInputType() {
+    if (this.isNativeMode) {
+      // Native mode: use type="password" and allow autocomplete for password managers
+      this._input.type = 'password';
+      this._input.setAttribute('autocomplete', 'current-password');
+      this._input.removeAttribute('data-form-type');
+      this._input.removeAttribute('data-lpignore');
+      this._input.removeAttribute('data-1p-ignore');
+      
+      // In native mode, reveal-toggle is not functional (browser handles masking)
+      // Auto-close reveal if it's open and hide the toggle button
+      if (this._isRevealed) {
+        this._setRevealed(false);
+      }
+    } else {
+      // Secure mode: use type="text" and prevent password managers
+      this._input.type = 'text';
+      this._input.setAttribute('autocomplete', 'off');
+      this._input.setAttribute('data-form-type', 'other');
+      this._input.setAttribute('data-lpignore', 'true');
+      this._input.setAttribute('data-1p-ignore', 'true');
+    }
+    
+    // Update toggle visibility based on both native-mode and reveal-toggle attribute
+    this._updateToggleVisibility();
   }
 
   /**

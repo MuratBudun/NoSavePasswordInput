@@ -165,14 +165,41 @@ This creates both versions:
 | `required` | boolean | - | Makes the field mandatory |
 | `disabled` | boolean | - | Disables the input |
 | `reveal-toggle` | boolean | - | Shows toggle button to reveal/hide text |
+| `native-mode` | boolean | - | Enables standard password input behavior (allows paste/copy/drag/drop) |
 | `enable-paste` | boolean | - | Enables paste operations (disabled by default) |
 | `enable-copy` | boolean | - | Enables copy operations (only when revealed, disabled by default) |
 | `enable-drag` | boolean | - | Enables drag operations (only when revealed, disabled by default) |
 | `enable-drop` | boolean | - | Enables drop operations (disabled by default) |
 
-**Security Note:** By default, paste, copy, drag, and drop operations are **disabled** for security. Use the `enable-*` attributes to explicitly allow these operations when needed.
+### Security Modes
 
-**Important:** `enable-copy` and `enable-drag` only work when the password is **revealed** (visible). When masked, these operations are always blocked for security.
+**Secure Mode (Default):** Maximum security - all copy/paste/drag/drop operations are **disabled** by default.
+- Uses `type="text"` with custom masking
+- Prevents browser password managers from detecting the field
+- Disables autocomplete and autofill
+
+**Native Mode:** Standard password input behavior - allows all operations like a regular `<input type="password">`.
+- Uses `type="password"` (browser handles masking)
+- Enables browser password managers
+- Allows autocomplete (`autocomplete="current-password"`)
+- Allows copy/paste/drag/drop operations
+- **Note:** `reveal-toggle` is automatically disabled in native-mode (browser handles masking)
+
+```html
+<!-- Secure mode (default) - all operations disabled -->
+<no-save-password name="secure-pin"></no-save-password>
+
+<!-- Native mode - behaves like standard password input, password managers work -->
+<!-- reveal-toggle will be hidden in native-mode -->
+<no-save-password name="regular-password" native-mode reveal-toggle></no-save-password>
+```
+
+**Security Note:** By default, paste, copy, drag, and drop operations are **disabled** for maximum security. You have two options:
+
+1. **Secure Mode (Default):** Use `enable-*` attributes to selectively allow specific operations
+2. **Native Mode:** Use `native-mode` attribute for standard password input behavior (all operations allowed)
+
+**Important:** In secure mode, `enable-copy` and `enable-drag` only work when the password is **revealed** (visible). When masked, these operations are always blocked for security. **Cut operation (Ctrl+X)** is treated the same as copy for security purposes.
 
 **Example - Enable specific operations:**
 ```html

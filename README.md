@@ -152,6 +152,30 @@ This creates both versions:
 </form>
 ```
 
+### HTML Event Attributes
+
+You can attach event listeners directly in HTML:
+
+```html
+<no-save-password 
+  name="password"
+  onenterkey="console.log('Enter pressed!', event.detail.value)"
+  oninput="console.log('Typing:', event.target.value)"
+  onchange="console.log('Changed:', event.target.value)"
+  onfocus="console.log('Focused')"
+  onblur="console.log('Blurred')"
+  oninvalid="console.log('Invalid')"
+></no-save-password>
+```
+
+**Supported event attributes:**
+- `onenterkey` - Enter key pressed
+- `oninput` - Value changed
+- `onchange` - Value changed and focus lost
+- `onfocus` - Input focused
+- `onblur` - Input lost focus
+- `oninvalid` - Validation failed
+
 ## Attributes
 
 | Attribute | Type | Default | Description |
@@ -166,6 +190,7 @@ This creates both versions:
 | `disabled` | boolean | - | Disables the input |
 | `reveal-toggle` | boolean | - | Shows toggle button to reveal/hide text |
 | `native-mode` | boolean | - | Enables standard password input behavior (allows paste/copy/drag/drop) |
+| `disable-submit` | boolean | - | Prevents form submission when Enter key is pressed (field is still included in form data) |
 | `enable-paste` | boolean | - | Enables paste operations (disabled by default) |
 | `enable-copy` | boolean | - | Enables copy operations (only when revealed, disabled by default) |
 | `enable-drag` | boolean | - | Enables drag operations (only when revealed, disabled by default) |
@@ -428,9 +453,9 @@ input.addEventListener('input', (e) => {
 });
 
 // Listen for Enter key press
-input.addEventListener('enter', (e) => {
+input.addEventListener('enterkey', (e) => {
   console.log('Enter pressed, value:', e.detail.value);
-  // Custom enter event is fired before form submission
+  // Custom enterkey event is fired before form submission
   // You can prevent default form submission if needed
 });
 
@@ -451,7 +476,7 @@ input.addEventListener('change', (e) => {
 
 **Available Events:**
 - `input` - Fired when the value changes
-- `enter` - Fired when Enter key is pressed (custom event with `detail.value`). **Note:** The form is automatically submitted after this event, mimicking native input behavior.
+- `enterkey` - Fired when Enter key is pressed (custom event with `detail.value`). **Note:** The form is automatically submitted after this event, mimicking native input behavior.
 - `change` - Fired when focus is lost and value has changed
 - `invalid` - Fired when validation fails
 - `focus` - Fired when input receives focus
@@ -480,6 +505,44 @@ Available data attributes:
 - `data-too-long-message`
 - `data-pattern-message`
 
+## Disabling Form Submission
+
+Use `disable-submit` to prevent the component from being included in form submission:
+
+```html
+<!-- Password for UI validation only, not sent to server -->
+<no-save-password 
+  name="confirmation"
+  disable-submit
+  placeholder="Confirm password"
+></no-save-password>
+
+<!-- Use case: Two-step verification where first input validates UI, second submits -->
+<form>
+  <!-- Step 1: User enters password for client-side validation -->
+  <no-save-password 
+    name="password-check"
+    disable-submit
+    minlength="8"
+  ></no-save-password>
+  
+  <!-- Step 2: After validation passes, enter again for submission -->
+  <no-save-password 
+    name="password"
+    minlength="8"
+  ></no-save-password>
+  
+  <button type="submit">Submit</button>
+</form>
+```
+
+When `disable-submit` is set, the component:
+- ✅ Still validates (required, minlength, pattern, etc.)
+- ✅ Still shows validation errors
+- ✅ Still fires input/change/enterkey events
+- ❌ Won't be included in FormData
+- ❌ Won't appear in form submission
+
 ## Replacing Legacy Password Inputs
 
 If you need to replace existing password inputs in legacy applications without breaking JavaScript references, use the static `replaceInput` method:
@@ -497,12 +560,21 @@ oldPasswordInput.addEventListener('input', (e) => {
 NoSavePasswordInput.replaceInput(oldPasswordInput, {
   revealToggle: true,
   maskChar: '●',
-  disablePaste: true
+  enablePaste: false,  // Disable paste (secure by default)
+  nativeMode: false,   // Use secure mode
+  
+  // Event listeners can be added in options
+  onEnterkey: (e) => {
+    console.log('Enter pressed:', e.detail.value);
+  },
+  onInput: (e) => {
+    console.log('Input changed:', e.target.value);
+  }
 });
 
 // JavaScript references still work!
 console.log(oldPasswordInput.value); // Works!
-oldPasswordInput.addEventListener('enter', (e) => {
+oldPasswordInput.addEventListener('enterkey', (e) => {
   console.log('Enter pressed:', e.detail.value); // Works!
 });
 ```
@@ -524,12 +596,40 @@ This means:
 
 ```javascript
 NoSavePasswordInput.replaceInput(originalInput, {
+  // Basic attributes
   placeholder: 'Enter password',
   maskChar: '●',           // Character to display for each character
-  revealToggle: true,      // Show reveal/hide toggle button
-  disablePaste: true,      // Prevent paste operations
   minlength: 8,            // Override original minlength
   maxlength: 20,           // Override original maxlength
+  pattern: '[A-Za-z0-9]+', // Validation pattern
+  
+  // Boolean attributes (camelCase)
+  revealToggle: true,      // Show reveal/hide toggle button
+  nativeMode: false,       // Use secure mode (false) or native password mode (true)
+  disableSubmit: false,    // Prevent form submission on Enter key (field is still in form data)
+  
+  // Security options (all disabled by default in secure mode)
+  enablePaste: false,      // Allow paste operations
+  enableCopy: false,       // Allow copy operations (only when password is revealed)
+  enableDrag: false,       // Allow drag operations (only when password is revealed)
+  enableDrop: false,       // Allow drop operations
+  
+  // Event listeners (all events supported)
+  onEnterkey: (e) => { console.log('Enter pressed:', e.detail.value); },
+  onInput: (e) => { console.log('Input:', e.target.value); },
+  onChange: (e) => { console.log('Changed:', e.target.value); },
+  onFocus: (e) => { console.log('Focused'); },
+  onBlur: (e) => { console.log('Blurred'); },
+  onInvalid: (e) => { console.log('Invalid'); }
+});
+  
+  // Legacy support (deprecated, use enablePaste instead)
+  disablePaste: true,      // Old API: inverted logic of enablePaste
+  
+  // Any other standard HTML attributes
+  required: true,
+  disabled: false
+});
   // ... any other attribute
 });
 ```

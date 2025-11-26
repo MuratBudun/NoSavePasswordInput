@@ -566,6 +566,14 @@
 
                 <div class="control-item">
                   <label>
+                    <input type="checkbox" id="ctrl-disable-submit">
+                    disable-submit
+                    <span class="info">Prevents form submission on Enter key press</span>
+                  </label>
+                </div>
+
+                <div class="control-item">
+                  <label>
                     <input type="checkbox" id="ctrl-enable-paste">
                     enable-paste
                   </label>
@@ -940,6 +948,7 @@
         disabled: document.getElementById('ctrl-disabled'),
         revealToggle: document.getElementById('ctrl-reveal-toggle'),
         nativeMode: document.getElementById('ctrl-native-mode'),
+        disableSubmit: document.getElementById('ctrl-disable-submit'),
         enablePaste: document.getElementById('ctrl-enable-paste'),
         enableCopy: document.getElementById('ctrl-enable-copy'),
         enableDrag: document.getElementById('ctrl-enable-drag'),
@@ -1059,6 +1068,12 @@
             console.log('🔒 native-mode disabled for:', playgroundInput.id);
           }
 
+          if (controls.disableSubmit.checked) {
+            playgroundInput.setAttribute('disable-submit', '');
+          } else {
+            playgroundInput.removeAttribute('disable-submit');
+          }
+
           if (controls.enablePaste.checked) {
             playgroundInput.setAttribute('enable-paste', '');
           } else {
@@ -1140,6 +1155,7 @@
         if (controls.pattern.value) htmlAttrs.push(`  pattern="${escapeHtml(controls.pattern.value)}"`);
         if (controls.revealToggle.checked) htmlAttrs.push(`  reveal-toggle`);
         if (controls.nativeMode.checked) htmlAttrs.push(`  native-mode`);
+        if (controls.disableSubmit.checked) htmlAttrs.push(`  disable-submit`);
         if (controls.enablePaste.checked) htmlAttrs.push(`  enable-paste`);
         if (controls.enableCopy.checked) htmlAttrs.push(`  enable-copy`);
         if (controls.enableDrag.checked) htmlAttrs.push(`  enable-drag`);
@@ -1292,7 +1308,7 @@
 
 <span style="color: #64748b;">// Add event listeners (legacy code)</span>
 <span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">addEventListener</span><span style="color: #cbd5e1;">(</span><span style="color: #86efac;">'input'</span><span style="color: #cbd5e1;">,</span> <span style="color: #e2e8f0;">handlePasswordInput</span><span style="color: #cbd5e1;">);</span>
-<span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">addEventListener</span><span style="color: #cbd5e1;">(</span><span style="color: #86efac;">'enter'</span><span style="color: #cbd5e1;">,</span> <span style="color: #e2e8f0;">handleEnterKey</span><span style="color: #cbd5e1;">);</span>
+<span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">addEventListener</span><span style="color: #cbd5e1;">(</span><span style="color: #86efac;">'enterkey'</span><span style="color: #cbd5e1;">,</span> <span style="color: #e2e8f0;">handleEnterKey</span><span style="color: #cbd5e1;">);</span>
 
 <span style="color: #64748b;">// Replace with NoSavePasswordInput - references still work!</span>
 <span style="color: #e2e8f0;">NoSavePasswordInput</span><span style="color: #cbd5e1;">.</span><span style="color: #fbbf24;">replaceInput</span><span style="color: #cbd5e1;">(</span><span style="color: #38bdf8;">passwordInput</span><span style="color: #cbd5e1;">,</span> <span style="color: #cbd5e1;">{</span>
@@ -1348,8 +1364,8 @@
         log('> Legacy input event: value = "' + e.target.value + '"');
       });
 
-      passwordInput.addEventListener('enter', (e) => {
-        log('> Legacy enter event detected! value = "' + e.detail.value + '"');
+      passwordInput.addEventListener('enterkey', (e) => {
+        log('> Legacy enterkey event detected! value = "' + e.detail.value + '"');
       });
 
       // Replace the input after a short delay (simulating DOMContentLoaded or similar)

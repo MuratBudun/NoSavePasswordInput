@@ -165,7 +165,7 @@ class NoSavePasswordInput extends HTMLElement {
   static formAssociated = true;
 
   static get observedAttributes() {
-    return ['disabled', 'placeholder', 'mask-char', 'minlength', 'maxlength', 'pattern', 'reveal-toggle', 'enable-paste', 'enable-copy', 'enable-drag', 'enable-drop', 'native-mode', 'name'];
+    return ['disabled', 'placeholder', 'mask-char', 'minlength', 'maxlength', 'pattern', 'reveal-toggle', 'enable-paste', 'enable-copy', 'enable-drag', 'enable-drop', 'native-mode', 'name', 'disable-submit'];
   }
 
   constructor() {
@@ -231,7 +231,22 @@ class NoSavePasswordInput extends HTMLElement {
     this._updateInputType();
     this._renderMaskedValue(this._value.length);
     this._updateToggleVisibility();
+    this._updateFormValue();
     this._updateValidity();
+    this._bindAttributeEventListeners();
+  }
+  
+  _bindAttributeEventListeners() {
+    // Bind event listeners from HTML attributes (onenterkey, oninput, etc.)
+    const eventAttributes = ['onenterkey', 'oninput', 'onchange', 'onfocus', 'onblur', 'oninvalid'];
+    eventAttributes.forEach(attr => {
+      const attrValue = this.getAttribute(attr);
+      if (attrValue) {
+        const eventName = attr.slice(2); // Remove 'on' prefix
+        const handler = new Function('event', attrValue);
+        this.addEventListener(eventName, handler.bind(this));
+      }
+    });
   }
 
   disconnectedCallback() {
@@ -279,6 +294,9 @@ class NoSavePasswordInput extends HTMLElement {
       case 'name':
         // name attribute is only used for form submission
         break;
+      case 'disable-submit':
+        // disable-submit only prevents form submission on Enter, field is still in FormData
+        break;
       default:
         this._updateValidity();
         break;
@@ -295,6 +313,11 @@ class NoSavePasswordInput extends HTMLElement {
     if (typeof state === 'string') {
       this.value = state;
     }
+  }
+
+  formDisabledCallback(disabled) {
+    // When disable-submit is set, the component won't participate in form submission
+    // This callback is automatically called by the browser when form-associated element's disabled state changes
   }
 
   get value() {
@@ -476,14 +499,19 @@ class NoSavePasswordInput extends HTMLElement {
     if (event.key === 'Enter') {
       event.preventDefault();
       
-      // Custom enter event
-      this.dispatchEvent(new CustomEvent('enter', { 
+      // Custom enterkey event
+      this.dispatchEvent(new CustomEvent('enterkey', { 
         bubbles: true,
         composed: true,
         detail: { value: this._value }
       }));
       
       // Form submit behavior (like native input)
+      // If disable-submit attribute is present, don't submit the form
+      if (this.hasAttribute('disable-submit')) {
+        return; // Don't submit form, but field is still in FormData
+      }
+      
       const form = this._internals.form;
       if (form) {
         // Use requestSubmit if available (triggers validation), otherwise submit
@@ -617,6 +645,7 @@ class NoSavePasswordInput extends HTMLElement {
   }
 
   _updateFormValue() {
+    // Always set form value - disable-submit only prevents Enter key submission
     this._internals.setFormValue(this._value);
   }
 
@@ -818,13 +847,38 @@ class NoSavePasswordInput extends HTMLElement {
 
     // Apply custom options
     Object.entries(options).forEach(([key, value]) => {
+      // Handle event listeners (onEnterkey, onInput, onChange, etc.)
+      if (key.startsWith('on') && typeof value === 'function') {
+        const eventName = key.slice(2).toLowerCase(); // onEnterkey -> enterkey
+        component.addEventListener(eventName, value);
+        return;
+      }
+      
+      // Handle kebab-case attribute names
       if (key === 'maskChar') {
         component.setAttribute('mask-char', value);
       } else if (key === 'revealToggle') {
         if (value) component.setAttribute('reveal-toggle', '');
+      } else if (key === 'nativeMode') {
+        if (value) component.setAttribute('native-mode', '');
+      } else if (key === 'disableSubmit') {
+        if (value) component.setAttribute('disable-submit', '');
+      } else if (key === 'enablePaste') {
+        if (value) component.setAttribute('enable-paste', '');
+      } else if (key === 'enableCopy') {
+        if (value) component.setAttribute('enable-copy', '');
+      } else if (key === 'enableDrag') {
+        if (value) component.setAttribute('enable-drag', '');
+      } else if (key === 'enableDrop') {
+        if (value) component.setAttribute('enable-drop', '');
       } else if (key === 'disablePaste') {
-        if (value) component.setAttribute('disable-paste', '');
+        // Legacy support: disablePaste is now inverted to enablePaste
+        if (!value) component.setAttribute('enable-paste', '');
+      } else if (typeof value === 'boolean') {
+        // For boolean options, only set if true
+        if (value) component.setAttribute(key, '');
       } else {
+        // For string/number values
         component.setAttribute(key, value);
       }
     });
@@ -856,7 +910,7 @@ class NoSavePasswordInput extends HTMLElement {
     });
 
     // Forward events from component to original input reference
-    ['input', 'change', 'focus', 'blur', 'enter', 'invalid'].forEach(eventType => {
+    ['input', 'change', 'focus', 'blur', 'enterkey', 'invalid'].forEach(eventType => {
       component.addEventListener(eventType, (e) => {
         const forwardedEvent = new CustomEvent(eventType, {
           bubbles: e.bubbles,
